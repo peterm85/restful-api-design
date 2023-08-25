@@ -10,9 +10,9 @@ Una API REST es una interfaz que permite acceder a un servicio web mediante peti
 
 Una API RESTful es más un estilo arquitectónico: un conjunto de principios que las aplicaciones web utilizan para comunicarse entre sí. Las API RESTful están construidas de tal forma que permiten a la aplicación web acceder a los datos y recursos que necesita sin necesidad de conocimientos especiales de programación. 
 
-Algunos de los objetivos son:
+Algunos de los objetivos a alcanzar mediante una API RESTful son:
 
-- Hacerlas sencillas y fáciles de usar tanto para los desarrolladores como para los usuarios.
+- Hacerla sencilla y fácil de usar tanto para los desarrolladores como para los usuarios
 - Utilizar patrones, terminología estandar y desarrollar comportamientos homogéneos
 - Manejo de errores claro e intuitivo
 - Proveer documentación
@@ -51,7 +51,7 @@ Indica quién es el propietario del servicio. Por ejemplo: *en.wikipedia.org*
 
 #### URI path
 
-Indica la ruta completa del recurso
+Indica la ruta completa del recurso.
 
 ##### Arquetipos de recursos
 
@@ -75,7 +75,7 @@ ACTIONS
 - Usar '-' en caso de necesitar palabras compuestas
 - Utilizar nombres en singular para recursos de tipo documento
 - Utilizar nombres en plugar para recursos de tipo almacenes o colecciones
-- Utilizar verbos para recursos de tipo controlador junto al método HTTP POST.
+- Utilizar verbos para recursos de tipo controlador junto al método HTTP POST (ejemplo: POST http://server/url-path/resource/action)
 
 #### URI query
 
@@ -97,13 +97,15 @@ Los metadatos son otro tipo de información que se envía durante las comunicacion
 - **Content-lenght**: indica el tamaño de los resultados en bytes de manera que el cliente pueda saber con anterioridad si se trata de una llamada muy pesada y podría causarle problemas de performance
 - **[ETag](https://es.wikipedia.org/wiki/HTTP_ETag) (Entity Tag)**: hash MD5 proporcionado como una manera de ayudar a prevenir que actualizaciones simultáneas de un recurso se sobrescriban entre sí 
 - **Cache**: conjunto de cabeceras que indican el uso o no de sistemas de cache, tales como 'cache-control', 'expires', 'date-response', 'no-cache', etc.
+<img src="doc/" alt="Cache"/> PENDIENTE
 - **Authorization**: envía el token de autorización en el caso de APIs securizadas
 - **[Accept-Encoding](https://http.dev/accept-encoding)**: indica los tipos de codificación permitidos 
 
 
+
 ## Patrones
 
-### Sin estado
+### Sin estado (stateless)
 
 Una de principales características de las APIs RESTful es su grado de independencia y escalabilidad, por lo que es importante evitar el uso de sesiones o estados. Esto obligaría a pasar las peticiones de una misma sesión a unas instancias concretas, volviéndolo todo mucho más complejo.
 
@@ -163,12 +165,89 @@ Para ello es una práctica común generar excepciones personalizadas que nos permi
 
 ### Unicode
 
-Finalmente también es importante el uso correcto del charset, de manera que el conjunto de caracteres devueltos se adecúe a lo solicitado por el cliente (por ejemplo: UTF8)
+Finalmente también es importante el uso correcto del charset, de manera que el conjunto de caracteres devueltos se adecúe a lo solicitado por el cliente (por ejemplo: UTF-8).
 Esto ayudará a que la API pueda ser internacionalizada.
 
 <img src="doc/" alt="Charset"/> PENDIENTE
 
 ## Patrones avanzados
+
+### Versionado
+
+Es muy dificil afirmar que una API va a mantenerse intacta a lo largo de su vida sin necesidad de ningún cambio. En el caso de cambios menores, corrección de errores, etc. no sería necesario un versionado del mismo. Sin embargo, para cambios importantes o que pudieran resultar incompatibles con el funcionamiento de la versión anterior se recomienda anotar con versiones cada uno de los comportamientos.
+
+A continuación veremos diferentes formas de versionar una API:
+
+- Mediante URI path: *http://localhost/v2/resource*
+- Mediante query parameter: *?version=2.0*
+- Mediante custom headers: *x-resource-version=2.0*
+- Mediante content-negociation: *Accept=application/resource-v2.0+json*
+
+<img src="doc/versioning.png" alt="Versioning"/>
+
+Quedará en manos del negocio la decisión de durante cuanto tiempo se deberán mantener versiones antiguas de un *endPoint* y el momento oportuno para darlo totalmente de baja.
+
+### Seguridad
+
+PENDIENTE
+
+### Uniform contract pattern
+
+PENDIENTE
+
+### Entity endpoints
+
+Se define como *Entity endpoint* al acceso individual a entidades SIN dependencias. De este modo no sería necesario controlar o actualizar entidades asociadas por lo que el mantenimiento del recurso se realizaría de una forma mucho más sencilla.
+
+### Redirecciones
+
+Aquellos endpoints que quedaran obsoletos o temporalmente inutilizables deberían comunicar correctamente esta situación y, en caso de que sea posible, proveer una alternativa al cliente. De este modo podríamos devolver un error HTTP *301 - Permanent redirect* o *307 - Temporary redirect* e incluir la cabecera *location* con la url alternativa.
+
+<img src="doc/redirect.png" alt="Redirect"/>
+
+Este patrón permite al cliente poder recuperarse y finalizar la operación de forma satisfactoria. En nuestro caso de ejemplo, la propia interface de Swagger ya se encarga de redireccionar y devolver los resultados desde la url alternativa:
+
+<img src="doc/redirectSwagger.png" alt="Redirect swagger"/>
+
+### Idempotencia
+
+La idempotencia es una característica basada en que ante una misma petición, la respuesta debería ser idéntica. Este patrón viene a solucionar sobre todo ciertos problemas de concurrencia o de peticiones repetidas. Para ello se hace uso de la cabecera ETag mencionada anteriormente para validar si el resultado sigue siendo el mismo. En caso contrario se recomendaría notificarlo al cliente mediante un error HTTP *409 - Conflict*
+
+### Operaciones bulk
+
+Una operación 'bulk' se diferencia de una operación 'batch' en que la primera es una operación única con múltiples objetos y la segunda son múltiples operaciones con múltiples objetos.
+
+Pongamos varios ejemplos:
+
+- Bulk: registrar varias acciones a un inversor
+- Batch: registrar varias acciones a varios inversores (por ejemplo en el caso de que el valor de las acciones baje de precio)
+
+Para ello es posible utilizar el método PATCH del recurso de manera que el body provea el listado de objetos a incorporar.
+
+<img src="doc/" alt="Patch"/> PENDIENTE
+
+Este tipo de operaciones pueden conllevar una baja performance por lo que podría ser necesario resolverlos de forma asíncrona (devolviendo *202 - Accepted*) o mediante la implementación de flujos en paralelo para una respuesta más rápida.
+
+### Circuit breaker
+
+El patrón '[circuit breaker](https://microservices.io/patterns/reliability/circuit-breaker.html)' proporciona una capa de control de cara a posibles ataques DoS (Denegación de Servicio) y/o respuesta rápida ante posibles pérdidas de servicio.
+
+<img src="doc/" alt="Circuit breaker"/> PENDIENTE
+
+### Reintentos
+
+PENDIENTE
+
+### BTF (Backend to Frontend)
+
+Existe una problemática específica para las aplicaciones multiplataforma: aquellas que tienen una web y una app movil ligera. En estos casos, por ejemplo, la app podría necesitar menos información y una mejor performance que la que pudiera resolver la web. Por ello se propone la implementación de interfaces especializadas para cada uno de los clientes (*/api/web/resource* vs */api/app/resource*). Esto puede resultar controvertido dadas las ventajas e inconvenientes que conlleva:
+
+**Ventajas:**
+- Permite tener una representación de los recursos más reducida para aquellos clientes que no necesiten tanta información 
+- Podríamos mejorar la performance para estos clientes que necesitaran una respuesta mucho más rápida
+
+**Inconvenientes:**
+- Sería necesario mantener ambas interfaces con un comportamiento muy similar
 
 ## Bibliografía
 
