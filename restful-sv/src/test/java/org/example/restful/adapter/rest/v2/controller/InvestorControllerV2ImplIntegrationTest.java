@@ -6,13 +6,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.example.restful.adapter.rest.v2.controller.InvestorControllerV2Impl.PATH;
 import static org.example.restful.adapter.rest.v2.controller.InvestorControllerV2Impl.SUBPATH;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -20,13 +23,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-integrationtest.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class InvestorControllerV2ImplIntegrationTest {
 
   @Autowired private MockMvc mvc;
 
   @Test
   @WithMockUser(roles = "ADMIN")
+  @Sql(value = "classpath:init/test_data.sql", executionPhase = BEFORE_TEST_METHOD)
   public void givenPageAndSizewhenGetAllInvestors_thenStatus200() throws Exception {
     // when then
     mvc.perform(

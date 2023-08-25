@@ -2,6 +2,7 @@ package org.example.restful.port.rest.v1;
 
 import java.util.List;
 
+import org.example.restful.port.rest.v1.api.model.InvestorRequest;
 import org.example.restful.port.rest.v1.api.model.InvestorResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -63,4 +64,6 @@ public interface InvestorController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
       })
   ResponseEntity<List<InvestorResponse>> getAllInvestors();
+
+  ResponseEntity<InvestorResponse> createInvestor(InvestorRequest investorRequest);
 }

@@ -1,13 +1,19 @@
 package org.example.restful.adapter.rest.v1.controller;
 
+import org.example.restful.port.rest.v1.api.model.InvestorRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.PATH;
 import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SLASH;
@@ -15,7 +21,9 @@ import static org.example.restful.adapter.rest.v1.controller.InvestorControllerI
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,13 +31,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-integrationtest.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class InvestorControllerImplIntegrationTest {
 
   @Autowired private MockMvc mvc;
 
+  private static ObjectMapper mapper = new ObjectMapper();
+
   @Test
   @WithMockUser(roles = "USER")
+  @Sql(value = "classpath:init/test_data.sql", executionPhase = BEFORE_TEST_METHOD)
   public void givenIdNumber_whenGetInvestorByIdNumber_thenStatus200() throws Exception {
     // given
     final String idNumber = "76245691H";
@@ -37,7 +49,9 @@ public class InvestorControllerImplIntegrationTest {
     // when then
     mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.idNumber", is("76245691H")))
+        .andExpect(jsonPath("$.name", is("Manuel Rodriguez")));
   }
 
   @Test
@@ -54,6 +68,7 @@ public class InvestorControllerImplIntegrationTest {
 
   @Test
   @WithMockUser(roles = "USER")
+  @Sql(value = "classpath:init/test_data.sql", executionPhase = BEFORE_TEST_METHOD)
   public void givenWrongIdNumber_whenGetInvestorByIdNumber_thenStatus404() throws Exception {
     // given
     final String idNumber = "76245691Y";
@@ -78,5 +93,33 @@ public class InvestorControllerImplIntegrationTest {
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(header().string("location", equalTo(expectedLocationRedirection)))
         .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @Test
+  @WithMockUser(roles = "USER")
+  public void whenCreateInvestor_thenStatus201() throws Exception {
+    // given
+    final InvestorRequest request =
+        InvestorRequest.builder()
+            .idNumber("11222333X")
+            .name("Olga Carmona")
+            .age(23)
+            .country("GRECIA")
+            .build();
+
+    final String expectedLocationRedirection = "/api/v1/invest/investor/11222333X";
+
+    // when then
+    mvc.perform(
+            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+        .andExpect(status().isCreated())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(header().string("location", equalTo(expectedLocationRedirection)))
+        .andExpect(jsonPath("$.idNumber", is("11222333X")))
+        .andExpect(jsonPath("$.name", is("Olga Carmona")));
+  }
+
+  private static String asJson(Object obj) throws JsonProcessingException {
+    return mapper.writeValueAsString(obj);
   }
 }
