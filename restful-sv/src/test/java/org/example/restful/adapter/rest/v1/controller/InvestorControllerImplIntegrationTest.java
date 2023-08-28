@@ -7,9 +7,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,9 +21,11 @@ import static org.example.restful.adapter.rest.v1.controller.InvestorControllerI
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class InvestorControllerImplIntegrationTest {
 
   @Autowired private MockMvc mvc;
@@ -41,7 +42,10 @@ public class InvestorControllerImplIntegrationTest {
 
   @Test
   @WithMockUser(roles = "USER")
-  @Sql(value = "classpath:init/test_data.sql", executionPhase = BEFORE_TEST_METHOD)
+  @SqlGroup({
+    @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
+    @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
+  })
   public void givenIdNumber_whenGetInvestorByIdNumber_thenStatus200() throws Exception {
     // given
     final String idNumber = "76245691H";
@@ -68,7 +72,10 @@ public class InvestorControllerImplIntegrationTest {
 
   @Test
   @WithMockUser(roles = "USER")
-  @Sql(value = "classpath:init/test_data.sql", executionPhase = BEFORE_TEST_METHOD)
+  @SqlGroup({
+    @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
+    @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
+  })
   public void givenWrongIdNumber_whenGetInvestorByIdNumber_thenStatus404() throws Exception {
     // given
     final String idNumber = "76245691Y";
@@ -97,6 +104,7 @@ public class InvestorControllerImplIntegrationTest {
 
   @Test
   @WithMockUser(roles = "USER")
+  @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   public void whenCreateInvestor_thenStatus201() throws Exception {
     // given
     final InvestorRequest request =
@@ -117,6 +125,90 @@ public class InvestorControllerImplIntegrationTest {
         .andExpect(header().string("location", equalTo(expectedLocationRedirection)))
         .andExpect(jsonPath("$.idNumber", is("11222333X")))
         .andExpect(jsonPath("$.name", is("Olga Carmona")));
+  }
+
+  @Test
+  @WithMockUser(roles = "USER")
+  @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
+  public void givenAnAlreadyCreatedInvestor_whenCreateInvestor_thenStatus201() throws Exception {
+    // given
+    final InvestorRequest request =
+        InvestorRequest.builder()
+            .idNumber("76245691H")
+            .name("Manuel Rodriguez")
+            .age(37)
+            .country("SPAIN")
+            .build();
+
+    final String expectedLocationRedirection = "/api/v1/invest/investor/76245691H";
+
+    // when then
+    mvc.perform(
+            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+        .andExpect(status().isCreated())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(header().string("location", equalTo(expectedLocationRedirection)))
+        .andExpect(jsonPath("$.idNumber", is("76245691H")))
+        .andExpect(jsonPath("$.name", is("Manuel Rodriguez")));
+
+    mvc.perform(
+            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+        .andExpect(status().isCreated())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(header().string("location", equalTo(expectedLocationRedirection)))
+        .andExpect(jsonPath("$.idNumber", is("76245691H")))
+        .andExpect(jsonPath("$.name", is("Manuel Rodriguez")));
+  }
+
+  @Test
+  @WithMockUser(roles = "USER")
+  @SqlGroup({
+    @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
+    @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
+  })
+  public void whenUpdateInvestor_thenStatus204() throws Exception {
+    // given
+    final String idNumber = "76245691H";
+
+    final InvestorRequest request =
+        InvestorRequest.builder()
+            .idNumber(idNumber)
+            .name("Manolo Rodriguez")
+            .age(38)
+            .country("SPAIN")
+            .build();
+
+    // when then
+    mvc.perform(
+            put(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+        .andExpect(status().isNoContent());
+
+    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.idNumber", is("76245691H")))
+        .andExpect(jsonPath("$.name", is("Manolo Rodriguez")))
+        .andExpect(jsonPath("$.age", is(38)));
+  }
+
+  @Test
+  @WithMockUser(roles = "USER")
+  public void givenNoInvestor_whenUpdateInvestor_thenStatus404() throws Exception {
+    // given
+    final String idNumber = "76245691H";
+
+    final InvestorRequest request =
+        InvestorRequest.builder()
+            .idNumber(idNumber)
+            .name("Manolo Rodriguez")
+            .age(38)
+            .country("SPAIN")
+            .build();
+
+    // when then
+    mvc.perform(
+            put(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+        .andExpect(status().isNotFound());
   }
 
   private static String asJson(Object obj) throws JsonProcessingException {

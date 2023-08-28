@@ -65,5 +65,53 @@ public interface InvestorController {
       })
   ResponseEntity<List<InvestorResponse>> getAllInvestors();
 
-  ResponseEntity<InvestorResponse> createInvestor(InvestorRequest investorRequest);
+  @Operation(summary = "Create a new investor")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Created",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE),
+            headers = @Header(name = "location", description = "How to get the investor")),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Server Error",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+      })
+  ResponseEntity<InvestorResponse> createInvestor(InvestorRequest investorRequest) throws Exception;
+
+  @SuppressWarnings("rawtypes")
+  @Operation(summary = "Update an investor")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "204",
+            description = "No content",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Investor not found",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Server Error",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+      })
+  ResponseEntity updateInvestor(InvestorRequest investorRequest);
 }

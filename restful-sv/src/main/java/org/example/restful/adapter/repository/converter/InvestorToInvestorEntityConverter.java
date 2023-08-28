@@ -14,6 +14,7 @@ public class InvestorToInvestorEntityConverter implements Converter<Investor, In
       return null;
     } else {
       return InvestorEntity.builder()
+          .id(domain.getId())
           .idNumber(domain.getIdNumber())
           .name(domain.getName())
           .age(domain.getAge())
