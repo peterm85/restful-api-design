@@ -64,7 +64,7 @@ Veamos algunos ejemplos:
 
 CRUD (Create, Read, Update y Delete)
 
-<img src="doc/" alt="swagger CRUD"/> PENDIENTE
+<img src="doc/CRUD.png" alt="swagger CRUD"/>
 
 ACTIONS
 
@@ -123,7 +123,9 @@ Dos posibles alternativas:
 
 En caso de que el formato no sea soportado se recomienda informar debidamente al cliente, por ejemplo devolviendo un error con código *406 - Not Acceptable* y un mensaje de 'Formato no soportado'
 
-<img src="doc/" alt="Format selection"/> PENDIENTE
+<img src="doc/contentNegotiation.png" alt="Content Negotiation"/>
+
+<img src="doc/contentNegotiation_notAcceptable.png" alt="Content Negotiation - Not Acceptable"/>
 
 ### URI templates
 
@@ -168,7 +170,7 @@ Para ello es una práctica común generar excepciones personalizadas que nos permi
 Finalmente también es importante el uso correcto del charset, de manera que el conjunto de caracteres devueltos se adecúe a lo solicitado por el cliente (por ejemplo: UTF-8).
 Esto ayudará a que la API pueda ser internacionalizada.
 
-<img src="doc/" alt="Charset"/> PENDIENTE
+
 
 ## Patrones avanzados
 
@@ -211,7 +213,7 @@ Este patrón permite al cliente poder recuperarse y finalizar la operación de for
 
 ### Idempotencia
 
-La idempotencia es una característica basada en que ante una misma petición, la respuesta debería ser idéntica. Este patrón viene a solucionar sobre todo ciertos problemas de concurrencia o de peticiones repetidas. Para ello se hace uso de la cabecera ETag mencionada anteriormente para validar si el resultado sigue siendo el mismo. En caso contrario se recomendaría notificarlo al cliente mediante un error HTTP *409 - Conflict*
+La idempotencia es una característica basada en que ante una misma petición, la respuesta debería ser idéntica. Este patrón viene a solucionar sobre todo ciertos problemas de concurrencia o de peticiones repetidas. Para ello puede hacerse uso de la cabecera ETag para validar si el resultado sigue siendo el mismo. De lo contrario se recomendaría notificar al cliente mediante un error HTTP *409 - Conflict*
 
 ### Operaciones bulk
 

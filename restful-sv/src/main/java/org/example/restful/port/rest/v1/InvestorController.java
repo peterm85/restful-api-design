@@ -26,10 +26,14 @@ public interface InvestorController {
         @ApiResponse(
             responseCode = "200",
             description = "Success",
-            content =
-                @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = InvestorResponse.class))),
+            content = {
+              @Content(
+                  mediaType = MediaType.APPLICATION_JSON_VALUE,
+                  schema = @Schema(implementation = InvestorResponse.class)),
+              @Content(
+                  mediaType = MediaType.APPLICATION_XML_VALUE,
+                  schema = @Schema(implementation = InvestorResponse.class))
+            }),
         @ApiResponse(
             responseCode = "400",
             description = "Bad request",
@@ -42,6 +46,7 @@ public interface InvestorController {
             responseCode = "404",
             description = "Investor not found",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(responseCode = "406", description = "Not acceptable"),
         @ApiResponse(
             responseCode = "500",
             description = "Server Error",

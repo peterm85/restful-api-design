@@ -42,7 +42,9 @@ public class InvestorControllerImpl implements InvestorController {
 
   @Override
   @PreAuthorize("hasAnyRole('USER','ADMIN')")
-  @GetMapping(value = SUBPATH + ID_PATH_PARAM, produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(
+      value = SUBPATH + ID_PATH_PARAM,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   public ResponseEntity<InvestorResponse> getInvestor(@PathVariable final String idNumber) {
 
     final InvestorResponse response =

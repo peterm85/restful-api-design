@@ -10,3 +10,8 @@
 ## In-memory data persistence
 
 * **Table:** investor
+
+## Security
+
+* **ROLE_USER:**  user1/password
+* **ROLE_ADMIN:** admin/admin

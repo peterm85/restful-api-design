@@ -60,6 +60,39 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
+  @WithMockUser(roles = "USER")
+  @SqlGroup({
+    @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
+    @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
+  })
+  public void givenIdNumberAndXMLAcceptHeader_whenGetInvestorByIdNumber_thenStatus200()
+      throws Exception {
+    // given
+    final String idNumber = "76245691H";
+
+    // when then
+    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).accept(MediaType.APPLICATION_XML))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML));
+  }
+
+  @Test
+  @WithMockUser(roles = "USER")
+  @SqlGroup({
+    @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
+    @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
+  })
+  public void givenIdNumberAndPDFAcceptHeader_whenGetInvestorByIdNumber_thenStatus406()
+      throws Exception {
+    // given
+    final String idNumber = "76245691H";
+
+    // when then
+    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).accept(MediaType.APPLICATION_PDF))
+        .andExpect(status().isNotAcceptable());
+  }
+
+  @Test
   @WithMockUser(roles = "INVALID")
   public void givenInvalidAuthRole_whenGetInvestorByIdNumber_thenStatus401() throws Exception {
     // given
