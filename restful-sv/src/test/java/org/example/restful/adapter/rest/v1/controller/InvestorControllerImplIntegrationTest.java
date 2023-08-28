@@ -20,6 +20,7 @@ import static org.example.restful.adapter.rest.v1.controller.InvestorControllerI
 import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SUBPATH;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
@@ -149,16 +150,16 @@ public class InvestorControllerImplIntegrationTest {
             .country("GRECIA")
             .build();
 
-    final String expectedLocationRedirection = "/api/v1/invest/investor/11222333X";
-
     // when then
     mvc.perform(
             post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
         .andExpect(status().isCreated())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(header().string("location", equalTo(expectedLocationRedirection)))
         .andExpect(jsonPath("$.idNumber", is("11222333X")))
-        .andExpect(jsonPath("$.name", is("Olga Carmona")));
+        .andExpect(jsonPath("$.name", is("Olga Carmona")))
+        .andExpect(jsonPath("$._links", hasKey("GET")))
+        .andExpect(jsonPath("$._links", hasKey("PUT")))
+        .andExpect(jsonPath("$._links", hasKey("DELETE")));
   }
 
   @Test
@@ -174,14 +175,11 @@ public class InvestorControllerImplIntegrationTest {
             .country("SPAIN")
             .build();
 
-    final String expectedLocationRedirection = "/api/v1/invest/investor/76245691H";
-
     // when then
     mvc.perform(
             post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
         .andExpect(status().isCreated())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(header().string("location", equalTo(expectedLocationRedirection)))
         .andExpect(jsonPath("$.idNumber", is("76245691H")))
         .andExpect(jsonPath("$.name", is("Manuel Rodriguez")));
 
@@ -189,7 +187,6 @@ public class InvestorControllerImplIntegrationTest {
             post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
         .andExpect(status().isCreated())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(header().string("location", equalTo(expectedLocationRedirection)))
         .andExpect(jsonPath("$.idNumber", is("76245691H")))
         .andExpect(jsonPath("$.name", is("Manuel Rodriguez")));
   }

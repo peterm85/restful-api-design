@@ -21,6 +21,7 @@
         <java.version>11</java.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <guava.version>32.1.1-jre</guava.version>
+        <springdoc-openapi-ui.version>1.6.12</springdoc-openapi-ui.version>
     </properties>
     
     <dependencies>
@@ -59,9 +60,9 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-        <dependency>
-		    <groupId>com.fasterxml.jackson.dataformat</groupId>
-		    <artifactId>jackson-dataformat-xml</artifactId>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
         
         <dependency>
@@ -73,7 +74,12 @@
 		<dependency>
 		    <groupId>org.springdoc</groupId>
 		    <artifactId>springdoc-openapi-ui</artifactId>
-		    <version>1.6.12</version>
+		    <version>${springdoc-openapi-ui.version}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-hateoas</artifactId>
 		</dependency>
 
         <dependency>

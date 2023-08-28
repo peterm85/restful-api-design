@@ -22,8 +22,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping(InvestorControllerImpl.PATH)
@@ -82,13 +86,9 @@ public class InvestorControllerImpl implements InvestorController {
     final Investor investor =
         investorService.createInvestor(requestConverter.convert(investorRequest));
 
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .location(
-            UriComponentsBuilder.newInstance()
-                .path(PATH.concat(SUBPATH).concat(SLASH).concat(investor.getIdNumber()))
-                .build()
-                .toUri())
-        .body(responseConverter.convert(investor));
+    final InvestorResponse response = responseConverter.convert(investor);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(applyHATEOAS(investorRequest, response));
   }
 
   @SuppressWarnings("rawtypes")
@@ -111,5 +111,21 @@ public class InvestorControllerImpl implements InvestorController {
     investorService.deleteInvestor(idNumber);
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
+
+  private InvestorResponse applyHATEOAS(
+      InvestorRequest investorRequest, InvestorResponse response) {
+
+    response.add(
+        linkTo(methodOn(InvestorControllerImpl.class).getInvestor(investorRequest.getIdNumber()))
+            .withRel(RequestMethod.GET.name()));
+    response.add(
+        linkTo(methodOn(InvestorControllerImpl.class).updateInvestor(investorRequest))
+            .withRel(RequestMethod.PUT.name()));
+    response.add(
+        linkTo(methodOn(InvestorControllerImpl.class).deleteInvestor(investorRequest.getIdNumber()))
+            .withRel(RequestMethod.DELETE.name()));
+
+    return response;
   }
 }

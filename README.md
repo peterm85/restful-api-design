@@ -121,9 +121,9 @@ Dos posibles alternativas:
 - **Enviando la cabecera**: Accept=application/json
 - **Enviando el queryParam**: ?accept=json
 
-En caso de que el formato no sea soportado se recomienda informar debidamente al cliente, por ejemplo devolviendo un error con código *406 - Not Acceptable* y un mensaje de 'Formato no soportado'
-
 <img src="doc/contentNegotiation.png" alt="Content Negotiation"/>
+
+En caso de que el formato no sea soportado se recomienda informar debidamente al cliente, por ejemplo devolviendo un error con código *406 - Not Acceptable*.
 
 <img src="doc/contentNegotiation_notAcceptable.png" alt="Content Negotiation - Not Acceptable"/>
 
@@ -256,3 +256,4 @@ Existe una problemática específica para las aplicaciones multiplataforma: aquell
 - [https://restfulapi.net/](https://restfulapi.net/)
 - [RESTful API Design Patterns and Best Practices - Harihara Subramanian](https://www.packtpub.com/product/hands-on-restful-api-design-patterns-and-best-practices/9781788992664)
 - [https://en.wikipedia.org/wiki/Uniform_Resource_Identifier](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)
+- [Spring HATEOAS](https://www.baeldung.com/spring-hateoas-tutorial)
