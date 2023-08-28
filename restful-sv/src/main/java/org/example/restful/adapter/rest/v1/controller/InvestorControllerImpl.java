@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -95,6 +96,17 @@ public class InvestorControllerImpl implements InvestorController {
   public ResponseEntity updateInvestor(@RequestBody final InvestorRequest investorRequest) {
 
     investorService.updateInvestor(requestConverter.convert(investorRequest));
+
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
+
+  @SuppressWarnings("rawtypes")
+  @Override
+  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @DeleteMapping(value = SUBPATH + ID_PATH_PARAM, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity deleteInvestor(@PathVariable final String idNumber) {
+
+    investorService.deleteInvestor(idNumber);
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }

@@ -23,6 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -166,7 +167,7 @@ public class InvestorControllerImplIntegrationTest {
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void whenUpdateInvestor_thenStatus204() throws Exception {
+  public void whenUpdateInvestor_thenStatus200() throws Exception {
     // given
     final String idNumber = "76245691H";
 
@@ -208,6 +209,24 @@ public class InvestorControllerImplIntegrationTest {
     // when then
     mvc.perform(
             put(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @WithMockUser(roles = "USER")
+  @SqlGroup({
+    @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
+    @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
+  })
+  public void whenDeteInvestor_thenStatus204() throws Exception {
+    // given
+    final String idNumber = "76245691H";
+
+    // when then
+    mvc.perform(delete(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent());
+
+    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 

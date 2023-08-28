@@ -14,7 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class InvestorService {
 
   @Autowired private InvestorRepository investorRepository;
@@ -63,5 +66,17 @@ public class InvestorService {
     investor.setId(investorFromDb.getId());
 
     investorRepository.save(domainConverter.convert(investor));
+  }
+
+  public void deleteInvestor(final String idNumber) {
+
+    try {
+      final InvestorEntity investor =
+          investorRepository.findByIdNumber(idNumber).orElseThrow(NotFoundException::new);
+
+      investorRepository.delete(investor);
+    } catch (NotFoundException nfe) {
+      log.debug("Investor {} not found", idNumber);
+    }
   }
 }

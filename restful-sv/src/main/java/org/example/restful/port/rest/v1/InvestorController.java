@@ -114,4 +114,28 @@ public interface InvestorController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
       })
   ResponseEntity updateInvestor(InvestorRequest investorRequest);
+
+  @SuppressWarnings("rawtypes")
+  @Operation(summary = "Delete an investor")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "204",
+            description = "No content",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Server Error",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+      })
+  ResponseEntity deleteInvestor(
+      @Parameter(description = "Identification number", example = "76245691H") String idNumber);
 }
