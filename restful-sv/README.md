@@ -10,6 +10,7 @@
 ## In-memory data persistence
 
 * **Table:** investor
+* **Table:** stock
 
 ## Security
 

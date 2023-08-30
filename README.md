@@ -93,6 +93,7 @@ Los metadatos son otro tipo de información que se envía durante las comunicacion
 
 <img src="doc/headers.png" alt="headers"/>
 
+- **Accept**: indica el formato de la petición
 - **Content-type**: indica el formato de la respuesta
 - **Content-lenght**: indica el tamaño de los resultados en bytes de manera que el cliente pueda saber con anterioridad si se trata de una llamada muy pesada y podría causarle problemas de performance
 - **[ETag](https://es.wikipedia.org/wiki/HTTP_ETag) (Entity Tag)**: hash MD5 proporcionado como una manera de ayudar a prevenir que actualizaciones simultáneas de un recurso se sobrescriban entre sí 
@@ -156,6 +157,8 @@ Por ejemplo, como respuesta a una operación de creación POST, la respuesta podrí
 <img src="doc/HATEOAS.png" alt="HATEOAS"/>
 
 Del mismo modo también sería de utilidad limitar aquellos métodos HTTP que no están permitidos (*405 - Method Not Allowed*) para informar al cliente qué operaciones puede y no puede realizar sobre el recurso.
+
+<img src="doc/notAllowedMethod.png" alt="Method Not Allowed"/>
 
 ### Errores y logs de excepciones
 
@@ -257,3 +260,5 @@ Existe una problemática específica para las aplicaciones multiplataforma: aquell
 - [RESTful API Design Patterns and Best Practices - Harihara Subramanian](https://www.packtpub.com/product/hands-on-restful-api-design-patterns-and-best-practices/9781788992664)
 - [https://en.wikipedia.org/wiki/Uniform_Resource_Identifier](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)
 - [Spring HATEOAS](https://www.baeldung.com/spring-hateoas-tutorial)
+- [Spring JPA pagination](https://www.baeldung.com/spring-data-jpa-pagination-sorting)
+- [Swagger annotations](https://www.baeldung.com/spring-rest-openapi-documentation)

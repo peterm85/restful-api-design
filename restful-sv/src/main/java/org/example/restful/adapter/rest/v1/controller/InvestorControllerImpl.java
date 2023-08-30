@@ -54,7 +54,7 @@ public class InvestorControllerImpl implements InvestorController {
     final InvestorResponse response =
         responseConverter.convert(investorService.getInvestorByIdNumber(idNumber));
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok().body(response);
   }
 
   @SuppressWarnings("unchecked")
