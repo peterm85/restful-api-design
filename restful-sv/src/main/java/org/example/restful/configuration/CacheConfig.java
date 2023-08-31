@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CacheConfig {
 
   @CacheEvict(value = "allstocks", allEntries = true)
-  @Scheduled(fixedRateString = "${caching.allStockTTL}") // Milliseconds
+  @Scheduled(fixedRateString = CacheTTL.ALL_STOCKS_TLL_STRING) // Milliseconds
   public void emptyCache() {
     log.info("Emptying cache");
   }

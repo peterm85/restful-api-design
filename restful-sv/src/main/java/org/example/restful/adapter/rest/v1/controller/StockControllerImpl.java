@@ -58,7 +58,7 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
     log.info("Getting all stocks");
 
     return ResponseEntity.ok()
-        .cacheControl(CacheControl.maxAge(cacheTTL.getAllStockTTL(), TimeUnit.MILLISECONDS))
+        .cacheControl(CacheControl.maxAge(cacheTTL.getAllStocksTTL(), TimeUnit.MILLISECONDS))
         .header("X-Last-Modified", dateFormat.format(new Date()))
         .body(responseConverter.convert(stockService.getAllStocks()));
   }
