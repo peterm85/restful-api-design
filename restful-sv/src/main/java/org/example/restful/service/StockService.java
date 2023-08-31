@@ -32,7 +32,7 @@ public class StockService {
     return entityConverter.convert(stockRepository.findAll());
   }
 
-  public Stock createStock(final Stock stock) throws Exception {
+  public Stock createStock(final Stock stock) {
 
     try {
       final StockEntity newEntity = stockRepository.save(domainConverter.convert(stock));

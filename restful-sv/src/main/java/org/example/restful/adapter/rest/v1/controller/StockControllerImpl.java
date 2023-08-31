@@ -1,13 +1,14 @@
 package org.example.restful.adapter.rest.v1.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.example.restful.adapter.rest.RestfulAPIController;
 import org.example.restful.adapter.rest.v1.converter.StockRequestToStockConverter;
 import org.example.restful.adapter.rest.v1.converter.StockToStockResponseConverter;
-import org.example.restful.configuration.CacheTTL;
 import org.example.restful.domain.Stock;
 import org.example.restful.port.rest.v1.StockController;
 import org.example.restful.port.rest.v1.api.model.StockRequest;
@@ -15,6 +16,7 @@ import org.example.restful.port.rest.v1.api.model.StockResponse;
 import org.example.restful.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,11 +33,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping(StockControllerImpl.PATH)
 @Slf4j
-public class StockControllerImpl implements StockController {
+public class StockControllerImpl extends RestfulAPIController<StockResponse>
+    implements StockController {
 
   public static final String PATH = "/api/v1/invest";
   public static final String SLASH = "/";
@@ -45,7 +49,6 @@ public class StockControllerImpl implements StockController {
 
   @Autowired private StockToStockResponseConverter responseConverter;
   @Autowired private StockRequestToStockConverter requestConverter;
-  @Autowired private CacheTTL cacheTTL;
 
   @Override
   @PreAuthorize("hasAnyRole('USER','ADMIN')")
@@ -53,8 +56,6 @@ public class StockControllerImpl implements StockController {
   @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<StockResponse>> getAllStocks() {
     log.info("Getting all stocks");
-
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
     return ResponseEntity.ok()
         .cacheControl(CacheControl.maxAge(cacheTTL.getAllStockTTL(), TimeUnit.MILLISECONDS))
@@ -68,22 +69,25 @@ public class StockControllerImpl implements StockController {
       value = SUBPATH,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<StockResponse> createStock(@RequestBody final StockRequest investorRequest)
-      throws Exception {
+  public ResponseEntity<StockResponse> createStock(
+      @RequestBody final StockRequest investorRequest) {
 
     final Stock stock = stockService.createStock(requestConverter.convert(investorRequest));
 
     final StockResponse response = responseConverter.convert(stock);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(applyHATEOAS(response));
+    applyHATEOAS(response, List.of(GET));
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  private StockResponse applyHATEOAS(StockResponse response) {
+  @Override
+  protected Map<RequestMethod, WebMvcLinkBuilder> hateoasMap(StockResponse response) {
+    Map<RequestMethod, WebMvcLinkBuilder> hateoasMap =
+        new HashMap<RequestMethod, WebMvcLinkBuilder>();
 
-    response.add(
-        linkTo(methodOn(StockControllerImpl.class).getAllStocks())
-            .withRel(RequestMethod.GET.name()));
+    hateoasMap.put(GET, linkTo(methodOn(this.getClass()).getAllStocks()));
 
-    return response;
+    return hateoasMap;
   }
 }
