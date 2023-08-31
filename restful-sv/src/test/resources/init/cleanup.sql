@@ -1,1 +1,2 @@
-TRUNCATE TABLE investor
+TRUNCATE TABLE investor;
+TRUNCATE TABLE stock;

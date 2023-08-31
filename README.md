@@ -258,7 +258,7 @@ Existe una problemática específica para las aplicaciones multiplataforma: aquell
 
 - [https://restfulapi.net/](https://restfulapi.net/)
 - [RESTful API Design Patterns and Best Practices - Harihara Subramanian](https://www.packtpub.com/product/hands-on-restful-api-design-patterns-and-best-practices/9781788992664)
-- [https://en.wikipedia.org/wiki/Uniform_Resource_Identifier](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)
+- [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)
 - [Spring HATEOAS](https://www.baeldung.com/spring-hateoas-tutorial)
 - [Spring JPA pagination](https://www.baeldung.com/spring-data-jpa-pagination-sorting)
 - [Swagger annotations](https://www.baeldung.com/spring-rest-openapi-documentation)

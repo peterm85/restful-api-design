@@ -14,9 +14,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@SecurityScheme(
+    name = "RestfulAPI",
+    scheme = "basic",
+    type = SecuritySchemeType.HTTP,
+    in = SecuritySchemeIn.HEADER)
 public class SecurityConfiguration extends GlobalMethodSecurityConfiguration {
 
   private static final String[] AUTH_WHITELIST = {

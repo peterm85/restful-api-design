@@ -1,15 +1,21 @@
 package org.example.restful.adapter.rest.v1.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.example.restful.adapter.rest.v1.converter.StockRequestToStockConverter;
 import org.example.restful.adapter.rest.v1.converter.StockToStockResponseConverter;
+import org.example.restful.configuration.CacheTTL;
 import org.example.restful.domain.Stock;
 import org.example.restful.port.rest.v1.StockController;
 import org.example.restful.port.rest.v1.api.model.StockRequest;
 import org.example.restful.port.rest.v1.api.model.StockResponse;
 import org.example.restful.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,13 +45,21 @@ public class StockControllerImpl implements StockController {
 
   @Autowired private StockToStockResponseConverter responseConverter;
   @Autowired private StockRequestToStockConverter requestConverter;
+  @Autowired private CacheTTL cacheTTL;
 
   @Override
   @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @Cacheable(value = "allstocks")
   @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<StockResponse>> getAllStocks() {
     log.info("Getting all stocks");
-    return ResponseEntity.ok().body(responseConverter.convert(stockService.getAllStocks()));
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+
+    return ResponseEntity.ok()
+        .cacheControl(CacheControl.maxAge(cacheTTL.getAllStockTTL(), TimeUnit.MILLISECONDS))
+        .header("X-Last-Modified", dateFormat.format(new Date()))
+        .body(responseConverter.convert(stockService.getAllStocks()));
   }
 
   @Override
