@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,15 +17,17 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
+import static org.example.restful.constant.Roles.ADMIN;
+import static org.example.restful.constant.Roles.USER;
+
 @Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(jsr250Enabled = true)
 @SecurityScheme(
     name = "RestfulAPI",
     scheme = "basic",
     type = SecuritySchemeType.HTTP,
     in = SecuritySchemeIn.HEADER)
-public class SecurityConfiguration extends GlobalMethodSecurityConfiguration {
+public class SecurityConfig extends GlobalMethodSecurityConfiguration {
 
   private static final String[] AUTH_WHITELIST = {
     // -- Swagger UI v3 (OpenAPI)
@@ -41,14 +42,14 @@ public class SecurityConfiguration extends GlobalMethodSecurityConfiguration {
         User.builder()
             .username("user1")
             .password(passwordEncoder().encode("password"))
-            .roles("USER")
+            .roles(USER)
             .build();
 
     UserDetails admin =
         User.builder()
             .username("admin")
             .password(passwordEncoder().encode("admin"))
-            .roles("ADMIN")
+            .roles(ADMIN)
             .build();
 
     return new InMemoryUserDetailsManager(user1, admin);

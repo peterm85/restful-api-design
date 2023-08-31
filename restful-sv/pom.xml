@@ -6,7 +6,7 @@
     
     <groupId>org.example</groupId>
     <artifactId>restful-sv</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <name>restful-sv</name>
     <description>RESTful example service</description>
     
@@ -70,11 +70,11 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
-        
+                
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

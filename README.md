@@ -98,7 +98,6 @@ Los metadatos son otro tipo de información que se envía durante las comunicacion
 - **Content-lenght**: indica el tamaño de los resultados en bytes de manera que el cliente pueda saber con anterioridad si se trata de una llamada muy pesada y podría causarle problemas de performance
 - **[ETag](https://es.wikipedia.org/wiki/HTTP_ETag) (Entity Tag)**: hash MD5 proporcionado como una manera de ayudar a prevenir que actualizaciones simultáneas de un recurso se sobrescriban entre sí 
 - **Cache**: conjunto de cabeceras que indican el uso o no de sistemas de cache, tales como 'cache-control', 'expires', 'date-response', 'no-cache', etc.
-<img src="doc/" alt="Cache"/> PENDIENTE
 - **Authorization**: envía el token de autorización en el caso de APIs securizadas
 - **[Accept-Encoding](https://http.dev/accept-encoding)**: indica los tipos de codificación permitidos 
 
@@ -173,7 +172,22 @@ Para ello es una práctica común generar excepciones personalizadas que nos permi
 Finalmente también es importante el uso correcto del charset, de manera que el conjunto de caracteres devueltos se adecúe a lo solicitado por el cliente (por ejemplo: UTF-8).
 Esto ayudará a que la API pueda ser internacionalizada.
 
+### Cache
 
+La caché es la capacidad de almacenar copias de datos a los que se accede con frecuencia en varios lugares a lo largo de la ruta solicitud-respuesta. 
+
+La optimización de la red mediante el almacenamiento en caché mejora la calidad general del servicio de las siguientes maneras:
+
+- Reduce el ancho de banda
+- Reduce la latencia
+- Reducir la carga de los servidores
+- Ocultar los fallos de la red
+
+Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se dé una condición especial.
+
+<img src="doc/cache.png" alt="Cache"/>
+
+<img src="doc/cache_code.png" alt="Cache source code"/>
 
 ## Patrones avanzados
 

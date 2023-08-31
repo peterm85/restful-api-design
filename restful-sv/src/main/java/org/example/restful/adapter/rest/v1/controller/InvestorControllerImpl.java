@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.example.restful.adapter.rest.RestfulAPIController;
 import org.example.restful.adapter.rest.v1.converter.InvestorRequestToInvestorConverter;
 import org.example.restful.adapter.rest.v1.converter.InvestorToInvestorResponseConverter;
@@ -18,7 +20,6 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static org.example.restful.constant.Roles.ADMIN;
+import static org.example.restful.constant.Roles.USER;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
@@ -53,7 +56,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
   @Autowired private InvestorRequestToInvestorConverter requestConverter;
 
   @Override
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @RolesAllowed({USER, ADMIN})
   @GetMapping(
       value = SUBPATH + ID_PATH_PARAM,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -70,7 +73,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
   @SuppressWarnings("unchecked")
   @Override
   @Deprecated
-  @PreAuthorize("hasRole('ADMIN')")
+  @RolesAllowed(ADMIN)
   @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<InvestorResponse>> getAllInvestors() {
 
@@ -85,7 +88,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
   }
 
   @Override
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @RolesAllowed({USER, ADMIN})
   @PostMapping(
       value = SUBPATH,
       consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -105,7 +108,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
 
   @SuppressWarnings("rawtypes")
   @Override
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @RolesAllowed({USER, ADMIN})
   @PutMapping(value = SUBPATH, consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity updateInvestor(@RequestBody final InvestorRequest investorRequest) {
 
@@ -116,7 +119,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
 
   @SuppressWarnings("rawtypes")
   @Override
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @RolesAllowed({USER, ADMIN})
   @DeleteMapping(value = SUBPATH + ID_PATH_PARAM, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity deleteInvestor(@PathVariable final String idNumber) {
 

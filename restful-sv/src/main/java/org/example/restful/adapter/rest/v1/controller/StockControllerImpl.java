@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.example.restful.adapter.rest.RestfulAPIController;
 import org.example.restful.adapter.rest.v1.converter.StockRequestToStockConverter;
 import org.example.restful.adapter.rest.v1.converter.StockToStockResponseConverter;
@@ -21,7 +23,6 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static org.example.restful.constant.Roles.ADMIN;
+import static org.example.restful.constant.Roles.USER;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -51,7 +54,7 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
   @Autowired private StockRequestToStockConverter requestConverter;
 
   @Override
-  @PreAuthorize("hasAnyRole('USER','ADMIN')")
+  @RolesAllowed({USER, ADMIN})
   @Cacheable(value = "allstocks")
   @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<StockResponse>> getAllStocks() {
@@ -64,7 +67,7 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
+  @RolesAllowed(ADMIN)
   @PostMapping(
       value = SUBPATH,
       consumes = MediaType.APPLICATION_JSON_VALUE,

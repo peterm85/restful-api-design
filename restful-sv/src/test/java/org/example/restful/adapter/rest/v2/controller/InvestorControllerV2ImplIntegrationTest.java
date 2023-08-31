@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.example.restful.adapter.rest.v2.controller.InvestorControllerV2Impl.PATH;
 import static org.example.restful.adapter.rest.v2.controller.InvestorControllerV2Impl.SUBPATH;
+import static org.example.restful.constant.Roles.ADMIN;
+import static org.example.restful.constant.Roles.USER;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -30,7 +32,7 @@ public class InvestorControllerV2ImplIntegrationTest {
   @Autowired private MockMvc mvc;
 
   @Test
-  @WithMockUser(roles = "ADMIN")
+  @WithMockUser(roles = ADMIN)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
@@ -51,7 +53,7 @@ public class InvestorControllerV2ImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "ADMIN")
+  @WithMockUser(roles = ADMIN)
   public void givenNoPageNoneSizewhenGetAllInvestors_thenStatus400() throws Exception {
     // when then
     mvc.perform(get(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON))
@@ -59,7 +61,7 @@ public class InvestorControllerV2ImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   public void givenInvalidAuthRolewhenGetAllInvestors_thenStatus401() throws Exception {
     // when then
     mvc.perform(

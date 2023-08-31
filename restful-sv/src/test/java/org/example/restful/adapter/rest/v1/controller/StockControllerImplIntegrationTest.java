@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.example.restful.adapter.rest.v1.controller.StockControllerImpl.PATH;
 import static org.example.restful.adapter.rest.v1.controller.StockControllerImpl.SUBPATH;
+import static org.example.restful.constant.Roles.ADMIN;
+import static org.example.restful.constant.Roles.USER;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -42,7 +44,7 @@ public class StockControllerImplIntegrationTest {
   private static ObjectMapper mapper = new ObjectMapper();
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(
         value = "classpath:init/data-stock.sql",
@@ -65,7 +67,7 @@ public class StockControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "ADMIN")
+  @WithMockUser(roles = ADMIN)
   @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   public void whenCreateStock_thenStatus201() throws Exception {
     // given
@@ -88,7 +90,7 @@ public class StockControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = "INVALID")
   public void givenInvalidAuthRole_whenCreateStock_thenStatus401() throws Exception {
     // given
     final StockRequest request =

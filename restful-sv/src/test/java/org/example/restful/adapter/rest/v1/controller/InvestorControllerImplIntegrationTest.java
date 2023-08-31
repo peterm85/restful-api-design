@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.PATH;
 import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SLASH;
 import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SUBPATH;
+import static org.example.restful.constant.Roles.ADMIN;
+import static org.example.restful.constant.Roles.USER;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasKey;
@@ -43,7 +45,7 @@ public class InvestorControllerImplIntegrationTest {
   private static ObjectMapper mapper = new ObjectMapper();
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
@@ -61,7 +63,7 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
@@ -78,7 +80,7 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
@@ -106,7 +108,7 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
@@ -124,7 +126,7 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "ADMIN")
+  @WithMockUser(roles = ADMIN)
   public void whenGetAllInvestors_thenStatus409() throws Exception {
     // given
     final String expectedLocationRedirection = "/api/v2/invest/investor?page=0&size=3";
@@ -138,7 +140,7 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   public void whenCreateInvestor_thenStatus201() throws Exception {
     // given
@@ -163,7 +165,7 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   public void givenAnAlreadyCreatedInvestor_whenCreateInvestor_thenStatus201() throws Exception {
     // given
@@ -192,7 +194,7 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
@@ -223,7 +225,7 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   public void givenNoInvestor_whenUpdateInvestor_thenStatus404() throws Exception {
     // given
     final String idNumber = "76245691H";
@@ -243,7 +245,7 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
