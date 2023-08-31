@@ -63,7 +63,7 @@ public class StockControllerImplIntegrationTest {
         .andExpect(jsonPath("$[1].corporationName", is("BBVA")))
         .andExpect(jsonPath("$[2].corporationName", is("Telefónica")))
         .andExpect(header().string("Cache-Control", equalTo("max-age=70")))
-        .andExpect(header().string("X-Last-Modified", notNullValue()));
+        .andExpect(header().string("Last-Modified", notNullValue()));
   }
 
   @Test

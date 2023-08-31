@@ -1,6 +1,6 @@
 package org.example.restful.adapter.rest.v1.controller;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
 
     return ResponseEntity.ok()
         .cacheControl(CacheControl.maxAge(cacheTTL.getAllStocksTTL(), TimeUnit.MILLISECONDS))
-        .header("X-Last-Modified", dateFormat.format(new Date()))
+        .lastModified(Instant.now())
         .body(responseConverter.convert(stockService.getAllStocks()));
   }
 

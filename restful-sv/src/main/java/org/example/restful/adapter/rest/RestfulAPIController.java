@@ -1,6 +1,5 @@
 package org.example.restful.adapter.rest;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public abstract class RestfulAPIController<T extends RepresentationModel<T>> {
 
   @Autowired protected CacheTTL cacheTTL;
-
-  protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
   protected void applyHATEOAS(T response, List<RequestMethod> includedLinks) {
 
