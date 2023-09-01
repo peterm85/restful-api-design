@@ -4,7 +4,15 @@
 
 En este apartado se pretende recoger, de manera resumida, los diferentes tipos de patrones y buenas prácticas a la hora de diseñar API RESTful. Además se plantearán algunos ejemplos sobre cómo llevarlos a cabo bajo el framework Spring.
 
-## ¿Qué es una API REST vs API RESTful?
+## <a name="index">Índice:</a>
+ - [¿Qué es una API REST vs API RESTful?](#what-is)
+ - [Reglas](#rules)
+ - [Patrones](#patterns)
+ - [Patrones avanzados](#advanced-patterns)
+
+
+
+## <a name="what-is">¿Qué es una API REST vs API RESTful?</a> [&#8593;](#index) 
 
 Una API REST es una interfaz que permite acceder a un servicio web mediante peticiones HTTP.
 
@@ -17,7 +25,7 @@ Algunos de los objetivos a alcanzar mediante una API RESTful son:
 - Manejo de errores claro e intuitivo
 - Proveer documentación
 
-## Reglas
+## <a name="rules">Reglas</a> [&#8593;](#index) 
 
 ### URI's para representar recursos
 
@@ -87,6 +95,7 @@ Un uso muy común de estos parámetros está dirigido a la paginación, ordenación y
 
 <img src="doc/URI_query.png" alt="URI query"/>
 
+
 ### Metadatos
 
 Los metadatos son otro tipo de información que se envía durante las comunicaciones entre servicios y a los que en ocasiones ni siquiera prestamos atención. A continuación veremos algunos de los más utilizados:
@@ -97,19 +106,30 @@ Los metadatos son otro tipo de información que se envía durante las comunicacion
 - **Content-type**: indica el formato de la respuesta
 - **Content-lenght**: indica el tamaño de los resultados en bytes de manera que el cliente pueda saber con anterioridad si se trata de una llamada muy pesada y podría causarle problemas de performance
 - **[ETag](https://es.wikipedia.org/wiki/HTTP_ETag) (Entity Tag)**: hash MD5 proporcionado como una manera de ayudar a prevenir que actualizaciones simultáneas de un recurso se sobrescriban entre sí 
-- **Cache**: conjunto de cabeceras que indican el uso o no de sistemas de cache, tales como 'cache-control', 'expires', 'date-response', 'no-cache', etc.
+- **Cache**: conjunto de cabeceras que indican el uso o no de sistemas de cache, tales como 'Cache-control', 'Expires', 'Date-response', 'Last-Modified', etc.
 - **Authorization**: envía el token de autorización en el caso de APIs securizadas
 - **[Accept-Encoding](https://http.dev/accept-encoding)**: indica los tipos de codificación permitidos 
 
 
 
-## Patrones
+## <a name="patterns">Patrones</a> [&#8593;](#index) 
 
 ### Sin estado (stateless)
 
 Una de principales características de las APIs RESTful es su grado de independencia y escalabilidad, por lo que es importante evitar el uso de sesiones o estados. Esto obligaría a pasar las peticiones de una misma sesión a unas instancias concretas, volviéndolo todo mucho más complejo.
 
 Para ello lo más importante es que en cada petición exista la información necesaria y suficiente requerida para resolverla. Dejaremos en manos de los clientes (frontales/móviles) el control de estas sesiones en caso de que sean necesarias.
+
+### Uniform contract pattern
+
+El patrón de interfaz uniforme es fundamental para el diseño de cualquier sistema RESTful. Permite simplificar y desacoplar la arquitectura, lo que permite que cada parte evolucione de forma independiente. 
+
+Las principales restricciones de esta interfaz uniforme son:
+- Utilización de méthodos HTTP (GET, POST, PUT, PATCH, DELETE)
+- Identificación de recursos en las solicitudes.
+- Manejo de recursos mediante representaciones
+- Mensajes autodescriptivos
+- Hipermedia como motor del estado de las aplicaciones (HATEOAS)
 
 ### Negociación del contenido
 
@@ -167,11 +187,6 @@ Para ello es una práctica común generar excepciones personalizadas que nos permi
 <img src="doc/exception.png" alt="Exception"/>
 <img src="doc/controllerAdvice.png" alt="Controller advice"/>
 
-### Unicode
-
-Finalmente también es importante el uso correcto del charset, de manera que el conjunto de caracteres devueltos se adecúe a lo solicitado por el cliente (por ejemplo: UTF-8).
-Esto ayudará a que la API pueda ser internacionalizada.
-
 ### Cache
 
 La caché es la capacidad de almacenar copias de datos a los que se accede con frecuencia en varios lugares a lo largo de la ruta solicitud-respuesta. 
@@ -189,7 +204,14 @@ Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se 
 
 <img src="doc/cache_code.png" alt="Cache source code"/>
 
-## Patrones avanzados
+### Unicode
+
+Finalmente también es importante el uso correcto del charset, de manera que el conjunto de caracteres devueltos se adecúe a lo solicitado por el cliente (por ejemplo: UTF-8).
+Esto ayudará a que la API pueda ser internacionalizada.
+
+
+
+## <a name="advanced-patterns">Patrones avanzados</a> [&#8593;](#index) 
 
 ### Versionado
 
@@ -202,17 +224,21 @@ A continuación veremos diferentes formas de versionar una API:
 - Mediante custom headers: *x-resource-version=2.0*
 - Mediante content-negociation: *Accept=application/resource-v2.0+json*
 
-<img src="doc/versioning.png" alt="Versioning"/>
+<img src="doc/versioning.png" alt="URI path versioning"/>
 
 Quedará en manos del negocio la decisión de durante cuanto tiempo se deberán mantener versiones antiguas de un *endPoint* y el momento oportuno para darlo totalmente de baja.
 
 ### Seguridad
 
-PENDIENTE
+Un aspecto importante en las APIs RESTful es la seguridad. A continuación enumeraremos algunos de los puntos más importantes:
 
-### Uniform contract pattern
-
-PENDIENTE
+- Política de mínimos permisos
+- Hazlo simple. Cuanto más 'innecesariamente' compleja es una solución, más facil es dejar abierta alguna brecha
+- Siempre usar el protocolo HTTPs para asegurar las conexiones
+- Utiliza contraseñas con hash
+- Nunca exponer información sensible en las URLs tales como usuarios, contraseñas, tokens, etc. tal y como ya comentamos en el apartado [URI query](#uri-query)
+- Considera el uso de OAuth en lugar de la autenticación básica (aunque ésta sea suficiente)
+- Valida los parámetros de entrada
 
 ### Entity endpoints
 
@@ -271,6 +297,7 @@ Existe una problemática específica para las aplicaciones multiplataforma: aquell
 ## Bibliografía
 
 - [https://restfulapi.net/](https://restfulapi.net/)
+- [Representational state transfer](https://en.wikipedia.org/wiki/Representational_state_transfer)
 - [RESTful API Design Patterns and Best Practices - Harihara Subramanian](https://www.packtpub.com/product/hands-on-restful-api-design-patterns-and-best-practices/9781788992664)
 - [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)
 - [Spring HATEOAS](https://www.baeldung.com/spring-hateoas-tutorial)
