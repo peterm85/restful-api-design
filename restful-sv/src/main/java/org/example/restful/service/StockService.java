@@ -5,7 +5,7 @@ import java.util.List;
 import org.example.restful.adapter.repository.converter.StockEntityToStockConverter;
 import org.example.restful.adapter.repository.converter.StockToStockEntityConverter;
 import org.example.restful.domain.Stock;
-import org.example.restful.exception.NotFoundException;
+import org.example.restful.exception.StockNotFoundException;
 import org.example.restful.port.repository.StockRepository;
 import org.example.restful.port.repository.entity.StockEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class StockService {
     return stockRepository
         .findByIsin(isin)
         .map(entityConverter::convert)
-        .orElseThrow(NotFoundException::new);
+        .orElseThrow(StockNotFoundException::new);
   }
 
   public List<Stock> getAllStocks() {

@@ -5,7 +5,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.example.restful.exception.NotFoundException;
+import org.example.restful.exception.InvestorNotFoundException;
+import org.example.restful.exception.StockNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,16 +21,16 @@ import lombok.extern.slf4j.Slf4j;
 @ControllerAdvice
 public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler(NotFoundException.class)
+  @ExceptionHandler({InvestorNotFoundException.class, StockNotFoundException.class})
   public final ResponseEntity<Error> handleNotFoundExceptions(
       final Exception ex, final WebRequest request) {
     log.error(
         "Response to {} with status {} and body {}",
         request,
         HttpStatus.NOT_FOUND,
-        "Investor not found");
+        ex.getMessage());
 
-    final Error error = new Error("ERR404", "Investor not found");
+    final Error error = new Error("ERR404", ex.getMessage());
 
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }

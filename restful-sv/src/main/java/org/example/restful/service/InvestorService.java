@@ -5,7 +5,7 @@ import java.util.List;
 import org.example.restful.adapter.repository.converter.InvestorEntityToInvestorConverter;
 import org.example.restful.adapter.repository.converter.InvestorToInvestorEntityConverter;
 import org.example.restful.domain.Investor;
-import org.example.restful.exception.NotFoundException;
+import org.example.restful.exception.InvestorNotFoundException;
 import org.example.restful.port.repository.InvestorRepository;
 import org.example.restful.port.repository.entity.InvestorEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class InvestorService {
     return investorRepository
         .findByIdNumber(idNumber)
         .map(entityConverter::convert)
-        .orElseThrow(NotFoundException::new);
+        .orElseThrow(InvestorNotFoundException::new);
   }
 
   public List<Investor> getAllInvestors(int page, int size) {
@@ -61,7 +61,7 @@ public class InvestorService {
         investorRepository
             .findByIdNumber(investor.getIdNumber())
             .map(entityConverter::convert)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(InvestorNotFoundException::new);
 
     investor.setId(investorFromDb.getId());
 
@@ -72,10 +72,10 @@ public class InvestorService {
 
     try {
       final InvestorEntity investor =
-          investorRepository.findByIdNumber(idNumber).orElseThrow(NotFoundException::new);
+          investorRepository.findByIdNumber(idNumber).orElseThrow(InvestorNotFoundException::new);
 
       investorRepository.delete(investor);
-    } catch (NotFoundException nfe) {
+    } catch (InvestorNotFoundException nfe) {
       log.debug("Investor {} not found", idNumber);
     }
   }
