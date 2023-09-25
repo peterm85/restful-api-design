@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 
 import org.example.restful.adapter.rest.RestfulAPIController;
 import org.example.restful.adapter.rest.v1.converter.InvestorRequestToInvestorConverter;
@@ -94,7 +95,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InvestorResponse> createInvestor(
-      @RequestBody final InvestorRequest investorRequest) throws Exception {
+      @Valid @RequestBody final InvestorRequest investorRequest) throws Exception {
 
     final Investor investor =
         investorService.createInvestor(requestConverter.convert(investorRequest));

@@ -1,17 +1,24 @@
 package org.example.restful.configuration;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.example.restful.exception.InvestorNotFoundException;
 import org.example.restful.exception.StockNotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -22,21 +29,22 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler({InvestorNotFoundException.class, StockNotFoundException.class})
-  public final ResponseEntity<Error> handleNotFoundExceptions(
-      final Exception ex, final WebRequest request) {
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ResponseBody
+  public final Error handleNotFoundExceptions(final Exception ex, final WebRequest request) {
     log.error(
         "Response to {} with status {} and body {}",
         request,
         HttpStatus.NOT_FOUND,
         ex.getMessage());
 
-    final Error error = new Error("ERR404", ex.getMessage());
-
-    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    return new Error("ERR404", ex.getMessage());
   }
 
   @ExceptionHandler(value = {AccessDeniedException.class})
-  public ResponseEntity<Error> handleAccessDeniedExceptions(
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ResponseBody
+  public Error handleAccessDeniedExceptions(
       HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex)
       throws IOException {
 
@@ -46,22 +54,38 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
         HttpStatus.UNAUTHORIZED,
         "Unauthorized");
 
-    final Error error = new Error("ERR401", "Unauthorized user");
+    return new Error("ERR401", "Unauthorized user");
+  }
 
-    return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex,
+      HttpHeaders headers,
+      HttpStatus status,
+      WebRequest request) {
+    Map<String, String> errors = new HashMap<>();
+    ex.getBindingResult()
+        .getAllErrors()
+        .forEach(
+            (error) -> {
+              String fieldName = ((FieldError) error).getField();
+              String errorMessage = error.getDefaultMessage();
+              errors.put(fieldName, errorMessage);
+            });
+
+    Error error = new Error("ERR400", "Invalid parameters ".concat(errors.toString()));
+    return handleExceptionInternal(ex, error, headers, HttpStatus.BAD_REQUEST, request);
   }
 
   @ExceptionHandler(Exception.class)
-  public final ResponseEntity<Object> handleAllExceptions(
-      final Exception ex, final WebRequest request) {
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public final Object handleAllExceptions(final Exception ex, final WebRequest request) {
     log.error(
         "Response to {} with status {} and body {}",
         request,
         HttpStatus.INTERNAL_SERVER_ERROR,
         ex.getMessage());
 
-    final Error error = new Error("ERR500", "Unknown error");
-
-    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    return new Error("ERR500", "Unknown error");
   }
 }

@@ -51,7 +51,7 @@ public class TradingControllerImplIntegrationTest {
         executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void whenBuyShares_thenStatus201() throws Exception {
+  public void whenPurchaseShares_thenStatus201() throws Exception {
     // given
     final String isin = "ES0105611000";
     final String idNumber = "76245691H";
@@ -76,8 +76,26 @@ public class TradingControllerImplIntegrationTest {
   }
 
   @Test
+  @WithMockUser(roles = "USER")
+  public void givenIncompletedBodyRequest_whenPurchaseShares_thenStatus400() throws Exception {
+    // given
+    final String isin = "ES0105611000";
+    final String idNumber = "76245691H";
+
+    final PurchaseRequest request = PurchaseRequest.builder().isin(isin).build();
+
+    // when then
+    mvc.perform(
+            post(PATH + SUBPATH + SLASH + idNumber + SLASH + PURCHASE_OPERATION)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
   @WithMockUser(roles = "INVALID")
-  public void givenInvalidAuthRole_whenBuyShares_thenStatus401() throws Exception {
+  public void givenInvalidAuthRole_whenPurchaseShares_thenStatus401() throws Exception {
     // given
     final String isin = "ES0105611000";
     final String idNumber = "76245691H";
@@ -110,8 +128,8 @@ public class TradingControllerImplIntegrationTest {
         executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void givenAnUnknowStockOrInvestor_whenBuyShares_thenStatus404(String isin, String idNumber)
-      throws Exception {
+  public void givenAnUnknowStockOrInvestor_whenPurchaseShares_thenStatus404(
+      String isin, String idNumber) throws Exception {
     // given
     final PurchaseRequest request =
         PurchaseRequest.builder()

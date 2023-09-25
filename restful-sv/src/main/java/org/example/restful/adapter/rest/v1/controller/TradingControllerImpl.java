@@ -1,6 +1,7 @@
 package org.example.restful.adapter.rest.v1.controller;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 
 import org.example.restful.adapter.rest.v1.converter.OperationToPurchaseResponseConverter;
 import org.example.restful.adapter.rest.v1.converter.PurchaseRequestToOperationConverter;
@@ -42,7 +43,8 @@ public class TradingControllerImpl implements TradingController {
   @RolesAllowed(USER)
   @PostMapping(value = PURCHASE_OPERATION_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<PurchaseResponse> purchase(
-      @PathVariable final String idNumber, @RequestBody final PurchaseRequest purchaseRequest) {
+      @PathVariable final String idNumber,
+      @Valid @RequestBody final PurchaseRequest purchaseRequest) {
 
     final Operation operation =
         tradingService.purchase(idNumber, requestConverter.convert(purchaseRequest));

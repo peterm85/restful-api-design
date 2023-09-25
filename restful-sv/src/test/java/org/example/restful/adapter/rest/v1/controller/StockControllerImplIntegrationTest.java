@@ -90,6 +90,19 @@ public class StockControllerImplIntegrationTest {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
+  public void givenIncompletedBodyRequest_whenCreateStock_thenStatus400() throws Exception {
+    // given
+    final StockRequest request = StockRequest.builder().isin("ES0105611000").build();
+
+    // when then
+    mvc.perform(
+            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
   @WithMockUser(roles = "INVALID")
   public void givenInvalidAuthRole_whenCreateStock_thenStatus401() throws Exception {
     // given

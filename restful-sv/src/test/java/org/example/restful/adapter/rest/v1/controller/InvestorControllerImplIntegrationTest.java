@@ -194,6 +194,19 @@ public class InvestorControllerImplIntegrationTest {
   }
 
   @Test
+  @WithMockUser(roles = "USER")
+  public void givenIncompletedBodyRequest_whenCreateInvestor_thenStatus400() throws Exception {
+    // given
+    final InvestorRequest request = InvestorRequest.builder().idNumber("11222333X").build();
+
+    // when then
+    mvc.perform(
+            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
   @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),

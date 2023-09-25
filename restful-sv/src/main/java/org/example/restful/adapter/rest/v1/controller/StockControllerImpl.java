@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 
 import org.example.restful.adapter.rest.RestfulAPIController;
 import org.example.restful.adapter.rest.v1.converter.StockRequestToStockConverter;
@@ -73,7 +74,7 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<StockResponse> createStock(
-      @RequestBody final StockRequest investorRequest) {
+      @Valid @RequestBody final StockRequest investorRequest) {
 
     final Stock stock = stockService.createStock(requestConverter.convert(investorRequest));
 
