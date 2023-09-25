@@ -1,6 +1,6 @@
 # restful-sv
 
-* **Version:** 1.0.2-SNAPSHOT
+* **Version:** 1.0.3-SNAPSHOT
 * **Description:** RESTful API example service
 
 ## REST Endpoints
@@ -11,6 +11,7 @@
 
 * **Table:** investor
 * **Table:** stock
+* **Table:** operation
 
 ## Security
 

@@ -71,6 +71,123 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Not allowed method",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/invest/investor",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"invest",
+						"investor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create stock",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"isin\": \"ES0105611000\",\r\n  \"corporationName\": \"Singular People\",\r\n  \"market\": \"MAD\",\r\n  \"currency\": \"EUR\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/invest/stock",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"invest",
+						"stock"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all stocks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/invest/stock",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"invest",
+						"stock"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy shares",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"isin\": \"ES0105611000\",\r\n  \"amount\": 150,\r\n  \"limitedPrize\": 3.56,\r\n  \"orderType\": \"PERMANENT\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/invest/investor/76245691H/buy",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"invest",
+						"investor",
+						"76245691H",
+						"buy"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {

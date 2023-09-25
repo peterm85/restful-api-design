@@ -55,7 +55,7 @@ Indica cómo interpretar la parte de la URI después de los ':'. Aunque algunos de
 
 #### Authority
 
-Indica quién es el propietario del servicio. Por ejemplo: *en.wikipedia.org*
+Indica quién es el propietario del servicio. Por ejemplo: *developers.google.com*
 
 #### URI path
 
@@ -76,13 +76,13 @@ CRUD (Create, Read, Update y Delete)
 
 ACTIONS
 
-<img src="doc/" alt="swagger ACTION"/> PENDIENTE
+<img src="doc/ACTIONS.png" alt="swagger ACTIONS"/>
 
 ##### Recomendaciones:
 - Evitar el uso de guiones bajos ('_') y puntos ('.') ya que, según donde se visualice, puede superponerse con el subrayado de los links
 - Usar '-' en caso de necesitar palabras compuestas
 - Utilizar nombres en singular para recursos de tipo documento
-- Utilizar nombres en plugar para recursos de tipo almacenes o colecciones
+- Utilizar nombres en plurar para recursos de tipo almacenes o colecciones
 - Utilizar verbos para recursos de tipo controlador junto al método HTTP POST (ejemplo: POST http://server/url-path/resource/action)
 
 #### URI query

@@ -20,7 +20,7 @@ public class StockService {
   @Autowired private StockEntityToStockConverter entityConverter;
   @Autowired private StockToStockEntityConverter domainConverter;
 
-  private Stock getStockByIsin(final String isin) {
+  public Stock getStockByIsin(final String isin) {
 
     return stockRepository
         .findByIsin(isin)
