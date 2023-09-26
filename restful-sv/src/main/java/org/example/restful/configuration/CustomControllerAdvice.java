@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.example.restful.exception.InvestorNotFoundException;
+import org.example.restful.exception.JsonPatchFormatException;
 import org.example.restful.exception.StockNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -75,6 +76,17 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
 
     Error error = new Error("ERR400", "Invalid parameters ".concat(errors.toString()));
     return handleExceptionInternal(ex, error, headers, HttpStatus.BAD_REQUEST, request);
+  }
+
+  @ExceptionHandler(JsonPatchFormatException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ResponseBody
+  public final Object handleJsonPatchFormatExceptions(
+      final JsonPatchFormatException ex, final WebRequest request) {
+    log.error(
+        "Response to {} with status {} and body {}", request, HttpStatus.CONFLICT, ex.getMessage());
+
+    return new Error("ERR409", ex.getMessage());
   }
 
   @ExceptionHandler(Exception.class)

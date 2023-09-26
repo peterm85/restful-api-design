@@ -7,38 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Create Investor",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"idNumber\": \"76245691H\",\r\n  \"name\": \"Manuel Rodriguez\",\r\n  \"age\": 37,\r\n  \"country\": \"SPAIN\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"invest",
-						"investor"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Investor by Id",
+			"name": "Get investor by Id",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {
 					"accept-encoding": true,
@@ -73,9 +42,74 @@
 			"response": []
 		},
 		{
-			"name": "Not allowed method",
+			"name": "Create investor",
 			"request": {
-				"method": "PATCH",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idNumber\": \"76245691H\",\r\n  \"name\": \"Manuel Rodriguez\",\r\n  \"age\": 37,\r\n  \"country\": \"SPAIN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/invest/investor",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"invest",
+						"investor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update investor",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idNumber\": \"76245691H\",\r\n  \"name\": \"Manuel Rodriguez\",\r\n  \"age\": 41,\r\n  \"country\": \"SPAIN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/invest/investor",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"invest",
+						"investor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Not allowed method",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "HEAD",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -136,9 +170,16 @@
 		},
 		{
 			"name": "Get all stocks",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "http://localhost:8080/api/v1/invest/stock",
 					"protocol": "http",
@@ -151,6 +192,49 @@
 						"v1",
 						"invest",
 						"stock"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modify stock",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json-patch+json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"op\":\"replace\", \r\n        \"path\":\"/currency\", \r\n        \"value\":\"USD\"\r\n    }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/invest/stock/ES0105611000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"invest",
+						"stock",
+						"ES0105611000"
 					]
 				}
 			},
@@ -195,12 +279,12 @@
 		"basic": [
 			{
 				"key": "password",
-				"value": "password",
+				"value": "admin",
 				"type": "string"
 			},
 			{
 				"key": "username",
-				"value": "user1",
+				"value": "admin",
 				"type": "string"
 			}
 		]

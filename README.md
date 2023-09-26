@@ -267,9 +267,9 @@ Pongamos varios ejemplos:
 - Bulk: registrar varias acciones a un inversor
 - Batch: registrar varias acciones a varios inversores (por ejemplo en el caso de que el valor de las acciones baje de precio)
 
-Para ello es posible utilizar el método PATCH del recurso de manera que el body provea el listado de objetos a incorporar.
+Para ello es posible utilizar el método [PATCH](https://en.wikipedia.org/wiki/JSON_Patch) del recurso de manera que el body provea el listado de objetos a incorporar.
 
-<img src="doc/" alt="Patch"/> PENDIENTE
+<img src="doc/Patch.png" alt="Patch"/>
 
 Este tipo de operaciones pueden conllevar una baja performance por lo que podría ser necesario resolverlos de forma asíncrona (devolviendo *202 - Accepted*) o mediante la implementación de flujos en paralelo para una respuesta más rápida.
 

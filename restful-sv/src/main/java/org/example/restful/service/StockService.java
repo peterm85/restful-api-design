@@ -5,6 +5,7 @@ import java.util.List;
 import org.example.restful.adapter.repository.converter.StockEntityToStockConverter;
 import org.example.restful.adapter.repository.converter.StockToStockEntityConverter;
 import org.example.restful.domain.Stock;
+import org.example.restful.exception.JsonPatchFormatException;
 import org.example.restful.exception.StockNotFoundException;
 import org.example.restful.port.repository.StockRepository;
 import org.example.restful.port.repository.entity.StockEntity;
@@ -12,8 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
+
 @Service
 public class StockService {
+
+  private static ObjectMapper objectMapper = new ObjectMapper();
 
   @Autowired private StockRepository stockRepository;
 
@@ -29,6 +38,7 @@ public class StockService {
   }
 
   public List<Stock> getAllStocks() {
+
     return entityConverter.convert(stockRepository.findAll());
   }
 
@@ -45,5 +55,26 @@ public class StockService {
         throw e;
       }
     }
+  }
+
+  public Stock modifyStock(final String isin, final JsonPatch patch) {
+
+    final Stock stock = getStockByIsin(isin);
+    try {
+      final Stock stockPatched = applyPatchToStock(patch, stock);
+
+      final StockEntity updatedStock = stockRepository.save(domainConverter.convert(stockPatched));
+
+      return entityConverter.convert(updatedStock);
+    } catch (JsonPatchException | JsonProcessingException e) {
+      throw new JsonPatchFormatException();
+    }
+  }
+
+  private Stock applyPatchToStock(JsonPatch patch, Stock targetStock)
+      throws JsonPatchException, JsonProcessingException {
+
+    JsonNode patched = patch.apply(objectMapper.convertValue(targetStock, JsonNode.class));
+    return objectMapper.treeToValue(patched, Stock.class);
   }
 }

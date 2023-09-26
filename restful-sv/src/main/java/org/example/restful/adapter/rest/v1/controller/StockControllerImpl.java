@@ -25,11 +25,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.github.fge.jsonpatch.JsonPatch;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +42,7 @@ import static org.example.restful.constant.Roles.USER;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 @RestController
 @RequestMapping(StockControllerImpl.PATH)
@@ -48,6 +53,7 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
   public static final String PATH = "/api/v1/invest";
   public static final String SLASH = "/";
   public static final String SUBPATH = SLASH + "stock";
+  private static final String ID_PATH_PARAM = SLASH + "{isin}";
 
   @Autowired private StockService stockService;
 
@@ -61,10 +67,14 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
   public ResponseEntity<List<StockResponse>> getAllStocks() {
     log.info("Getting all stocks");
 
+    final List<StockResponse> responses = responseConverter.convert(stockService.getAllStocks());
+
+    applyHATEOAS(responses, List.of(GET, PATCH));
+
     return ResponseEntity.ok()
         .cacheControl(CacheControl.maxAge(cacheTTL.getAllStocksTTL(), TimeUnit.MILLISECONDS))
         .lastModified(Instant.now())
-        .body(responseConverter.convert(stockService.getAllStocks()));
+        .body(responses);
   }
 
   @Override
@@ -74,24 +84,46 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<StockResponse> createStock(
-      @Valid @RequestBody final StockRequest investorRequest) {
-
-    final Stock stock = stockService.createStock(requestConverter.convert(investorRequest));
+      @Valid @RequestBody final StockRequest stockRequest) {
+    log.info("Creating stock {}", stockRequest.getIsin());
+    final Stock stock = stockService.createStock(requestConverter.convert(stockRequest));
 
     final StockResponse response = responseConverter.convert(stock);
 
-    applyHATEOAS(response, List.of(GET));
+    applyHATEOAS(response, List.of(GET, PATCH));
 
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @Override
-  protected Map<RequestMethod, WebMvcLinkBuilder> hateoasMap(StockResponse response) {
+  @RolesAllowed(ADMIN)
+  @PatchMapping(
+      value = SUBPATH + ID_PATH_PARAM,
+      consumes = "application/json-patch+json",
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<StockResponse> modifyStock(
+      @PathVariable final String isin, @RequestBody final JsonPatch patch) {
+    log.info("Modifying stock {}", isin);
+
+    final StockResponse response = responseConverter.convert(stockService.modifyStock(isin, patch));
+
+    applyHATEOAS(response, List.of(GET, PATCH));
+
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  @Override
+  protected Map<RequestMethod, WebMvcLinkBuilder> hateoasMap(final StockResponse response) {
     Map<RequestMethod, WebMvcLinkBuilder> hateoasMap =
         new HashMap<RequestMethod, WebMvcLinkBuilder>();
+    try {
 
-    hateoasMap.put(GET, linkTo(methodOn(this.getClass()).getAllStocks()));
-
+      hateoasMap.put(GET, linkTo(methodOn(this.getClass()).getAllStocks()));
+      hateoasMap.put(
+          PATCH, linkTo(methodOn(this.getClass()).modifyStock(response.getIsin(), null)));
+    } catch (Exception ex) {
+      log.error("Error during hateoasMap construction: {}", ex.getMessage());
+    }
     return hateoasMap;
   }
 }
