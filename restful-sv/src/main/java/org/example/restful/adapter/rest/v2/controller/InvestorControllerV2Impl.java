@@ -3,11 +3,11 @@ package org.example.restful.adapter.rest.v2.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
-import org.example.restful.adapter.rest.RestfulAPIController;
 import org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl;
 import org.example.restful.adapter.rest.v1.converter.InvestorToInvestorResponseConverter;
 import org.example.restful.port.rest.v1.api.model.InvestorRequest;
@@ -15,8 +15,10 @@ import org.example.restful.port.rest.v1.api.model.InvestorResponse;
 import org.example.restful.port.rest.v2.InvestorControllerV2;
 import org.example.restful.port.rest.v2.api.model.PageableRequest;
 import org.example.restful.service.InvestorService;
+import org.example.restful.utils.RestfulAPIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +34,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @RequestMapping(InvestorControllerV2Impl.PATH)
-public class InvestorControllerV2Impl extends RestfulAPIController<InvestorResponse>
-    implements InvestorControllerV2 {
+public class InvestorControllerV2Impl implements InvestorControllerV2 {
 
   public static final String PATH = "/api/v2/invest";
   public static final String SLASH = "/";
@@ -53,25 +54,25 @@ public class InvestorControllerV2Impl extends RestfulAPIController<InvestorRespo
         converter.convert(
             investorService.getAllInvestors(pageableRequest.getPage(), pageableRequest.getSize()));
 
-    applyHATEOAS(response, List.of(PUT, DELETE));
-
-    return ResponseEntity.ok(response);
+    return RestfulAPIResponse.status(HttpStatus.OK)
+        .hateoas(getHateoasMap, List.of(PUT, DELETE))
+        .body(response);
   }
 
-  @Override
-  protected Map<RequestMethod, WebMvcLinkBuilder> hateoasMap(InvestorResponse response) {
-    Map<RequestMethod, WebMvcLinkBuilder> hateoasMap =
-        new HashMap<RequestMethod, WebMvcLinkBuilder>();
+  private static Function<InvestorResponse, Map<RequestMethod, WebMvcLinkBuilder>> getHateoasMap =
+      response -> {
+        Map<RequestMethod, WebMvcLinkBuilder> hateoasMap =
+            new HashMap<RequestMethod, WebMvcLinkBuilder>();
 
-    hateoasMap.put(
-        PUT,
-        linkTo(
-            methodOn(InvestorControllerImpl.class)
-                .updateInvestor(InvestorRequest.builder().build())));
-    hateoasMap.put(
-        DELETE,
-        linkTo(methodOn(InvestorControllerImpl.class).deleteInvestor(response.getIdNumber())));
+        hateoasMap.put(
+            PUT,
+            linkTo(
+                methodOn(InvestorControllerImpl.class)
+                    .updateInvestor(InvestorRequest.builder().build())));
+        hateoasMap.put(
+            DELETE,
+            linkTo(methodOn(InvestorControllerImpl.class).deleteInvestor(response.getIdNumber())));
 
-    return hateoasMap;
-  }
+        return hateoasMap;
+      };
 }

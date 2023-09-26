@@ -10,6 +10,7 @@ import org.example.restful.port.rest.v1.TradingController;
 import org.example.restful.port.rest.v1.api.model.PurchaseRequest;
 import org.example.restful.port.rest.v1.api.model.PurchaseResponse;
 import org.example.restful.service.TradingService;
+import org.example.restful.utils.RestfulAPIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,7 +42,10 @@ public class TradingControllerImpl implements TradingController {
 
   @Override
   @RolesAllowed(USER)
-  @PostMapping(value = PURCHASE_OPERATION_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(
+      value = PURCHASE_OPERATION_PATH,
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<PurchaseResponse> purchase(
       @PathVariable final String idNumber,
       @Valid @RequestBody final PurchaseRequest purchaseRequest) {
@@ -49,6 +53,6 @@ public class TradingControllerImpl implements TradingController {
     final Operation operation =
         tradingService.purchase(idNumber, requestConverter.convert(purchaseRequest));
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(responseConverter.convert(operation));
+    return RestfulAPIResponse.status(HttpStatus.CREATED).body(responseConverter.convert(operation));
   }
 }

@@ -1,12 +1,14 @@
 package org.example.restful.port.rest.v1.api.model;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class PurchaseResponse {
+public class PurchaseResponse extends RepresentationModel<StockResponse> {
   @Schema(description = "Operation id", example = "1")
   private Long id;
 
