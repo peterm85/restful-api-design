@@ -105,11 +105,8 @@
 		},
 		{
 			"name": "Not allowed method",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
-				"method": "HEAD",
+				"method": "PATCH",
 				"header": [],
 				"body": {
 					"mode": "raw",

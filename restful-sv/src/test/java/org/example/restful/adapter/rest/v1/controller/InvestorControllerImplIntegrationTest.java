@@ -23,7 +23,6 @@ import static org.example.restful.constant.Roles.USER;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -134,9 +133,7 @@ public class InvestorControllerImplIntegrationTest {
     // when then
     mvc.perform(get(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isPermanentRedirect())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(header().string("location", equalTo(expectedLocationRedirection)))
-        .andExpect(jsonPath("$", hasSize(0)));
+        .andExpect(header().string("location", equalTo(expectedLocationRedirection)));
   }
 
   @Test

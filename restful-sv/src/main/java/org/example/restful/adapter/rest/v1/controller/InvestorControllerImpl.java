@@ -1,6 +1,5 @@
 package org.example.restful.adapter.rest.v1.controller;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,11 +70,10 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
     return ResponseEntity.ok().body(response);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Deprecated
   @RolesAllowed(ADMIN)
-  @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = SUBPATH)
   public ResponseEntity<List<InvestorResponse>> getAllInvestors() {
 
     return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
@@ -85,7 +83,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
                 .query("page=0&size=3")
                 .build()
                 .toUri())
-        .body(Collections.EMPTY_LIST);
+        .build();
   }
 
   @Override

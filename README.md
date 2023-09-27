@@ -167,7 +167,7 @@ Existen diferentes formas de implementar la paginación:
 
 <img src="doc/URI_query.png" alt="URI query"/>
 
-### Descubrimiento
+### Descubrimiento - HATEOAS
 
 Provee al cliente de las URI que pueden serles de utilizad para otras operaciones con el recurso.
 
@@ -175,7 +175,7 @@ Por ejemplo, como respuesta a una operación de creación POST, la respuesta podrí
 
 <img src="doc/HATEOAS.png" alt="HATEOAS"/>
 
-Del mismo modo también sería de utilidad limitar aquellos métodos HTTP que no están permitidos (*405 - Method Not Allowed*) para informar al cliente qué operaciones puede y no puede realizar sobre el recurso.
+Del mismo modo también sería de utilidad limitar aquellos métodos HTTP que no están permitidos (*405 - Method Not Allowed*) para informar al cliente sobre qué operaciones puede y no puede realizar en el recurso.
 
 <img src="doc/notAllowedMethod.png" alt="Method Not Allowed"/>
 
@@ -185,9 +185,25 @@ Es recomendable asociar correctamente el código de error HTTP devuelto con el me
 Para ello es una práctica común generar excepciones personalizadas que nos permitan identificar correctamente el momento y la causa del error.
 
 <img src="doc/exception.png" alt="Exception"/>
-<img src="doc/controllerAdvice.png" alt="Controller advice"/>
 
-### Cache
+>[CustomControllerAdvice.java](restful-sv/src/main/java/org/example/restful/configuration/CustomControllerAdvice.java)
+
+```
+  @ExceptionHandler({InvestorNotFoundException.class, StockNotFoundException.class})
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ResponseBody
+  public final Error handleNotFoundExceptions(final Exception ex, final WebRequest request) {
+    log.error(
+        "Response to {} with status {} and body {}",
+        request,
+        HttpStatus.NOT_FOUND,
+        ex.getMessage());
+
+    return new Error("ERR404", ex.getMessage());
+  }
+```
+
+### Caché
 
 La caché es la capacidad de almacenar copias de datos a los que se accede con frecuencia en varios lugares a lo largo de la ruta solicitud-respuesta. 
 
@@ -202,7 +218,24 @@ Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se 
 
 <img src="doc/cache.png" alt="Cache"/>
 
-<img src="doc/cache_code.png" alt="Cache source code"/>
+>[StockControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/StockControllerImpl.java)
+
+```
+  @Override
+  @RolesAllowed({USER, ADMIN})
+  @Cacheable(value = "allstocks")
+  @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<StockResponse>> getAllStocks() {
+    log.info("Getting all stocks");
+
+    final List<StockResponse> responses = responseConverter.convert(stockService.getAllStocks());
+
+    return ResponseEntity.ok()
+        .cacheControl(CacheControl.maxAge(cacheTTL.getAllStocksTTL(), TimeUnit.MILLISECONDS))
+        .lastModified(Instant.now())
+        .body(responses);
+  }
+```
 
 ### Unicode
 
@@ -232,13 +265,33 @@ Quedará en manos del negocio la decisión de durante cuanto tiempo se deberán man
 
 Un aspecto importante en las APIs RESTful es la seguridad. A continuación enumeraremos algunos de los puntos más importantes:
 
-- Política de mínimos permisos
+- Política de mínimos permisos (@RolesAllowed)
 - Hazlo simple. Cuanto más 'innecesariamente' compleja es una solución, más facil es dejar abierta alguna brecha
 - Siempre usar el protocolo HTTPs para asegurar las conexiones
 - Utiliza contraseñas con hash
 - Nunca exponer información sensible en las URLs tales como usuarios, contraseñas, tokens, etc. tal y como ya comentamos en el apartado [URI query](#uri-query)
 - Considera el uso de OAuth en lugar de la autenticación básica (aunque ésta sea suficiente)
-- Valida los parámetros de entrada
+- Valida los parámetros de entrada (@Valid)
+
+>[InvestorControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/InvestorControllerImpl.java)
+
+```
+  @Override
+  @RolesAllowed({USER, ADMIN})
+  @PostMapping(value = SUBPATH,
+               consumes = MediaType.APPLICATION_JSON_VALUE,
+               produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InvestorResponse> createInvestor(
+      @Valid @RequestBody final InvestorRequest investorRequest) throws Exception {
+
+    final Investor investor =
+        investorService.createInvestor(requestConverter.convert(investorRequest));
+
+    final InvestorResponse response = responseConverter.convert(investor);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+```
 
 ### Entity endpoints
 
@@ -248,7 +301,25 @@ Se define como *Entity endpoint* al acceso individual a entidades SIN dependenci
 
 Aquellos endpoints que quedaran obsoletos o temporalmente inutilizables deberían comunicar correctamente esta situación y, en caso de que sea posible, proveer una alternativa al cliente. De este modo podríamos devolver un error HTTP *301 - Permanent redirect* o *307 - Temporary redirect* e incluir la cabecera *location* con la url alternativa.
 
-<img src="doc/redirect.png" alt="Redirect"/>
+>[InvestorControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/InvestorControllerImpl.java)
+
+```
+  @Override
+  @Deprecated
+  @RolesAllowed(ADMIN)
+  @GetMapping(value = SUBPATH)
+  public ResponseEntity<List<InvestorResponse>> getAllInvestors() {
+
+    return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
+        .location(
+            UriComponentsBuilder.newInstance()
+                .path(NEW_PATH.concat(SUBPATH))
+                .query("page=0&size=3")
+                .build()
+                .toUri())
+        .build();
+  }
+```
 
 Este patrón permite al cliente poder recuperarse y finalizar la operación de forma satisfactoria. En nuestro caso de ejemplo, la propia interface de Swagger ya se encarga de redireccionar y devolver los resultados desde la url alternativa:
 
@@ -256,7 +327,11 @@ Este patrón permite al cliente poder recuperarse y finalizar la operación de for
 
 ### Idempotencia
 
-La idempotencia es una característica basada en que ante una misma petición, la respuesta debería ser idéntica. Este patrón viene a solucionar sobre todo ciertos problemas de concurrencia o de peticiones repetidas. Para ello puede hacerse uso de la cabecera ETag para validar si el resultado sigue siendo el mismo. De lo contrario se recomendaría notificar al cliente mediante un error HTTP *409 - Conflict*
+La idempotencia es una característica basada en que ante una misma petición, la respuesta debería ser idéntica. Este patrón viene a solucionar sobre todo ciertos problemas de concurrencia o de peticiones repetidas. Por defecto los métodos GET, PUT y DELETE son considerados idempotentes, al contrario que los métodos POST y PATCH. 
+
+En la mayoría de casos podría ser suficiente con adaptar algunos endpoints de manera que siempre devuelvan la misma respuesta. Un [ejemplo](restful-sv/src/main/java/org/example/restful/service/InvestorService.java) podría ser una petición DELETE que elimine un inversor: si el inversor existe lo elimina y si ya fue eliminado anteriormente no hace nada. De este modo el cliente no tendrá que preocuparse en caso de recibir un error por inversor no encontrado ya que no le aporta ningún valor.
+
+En caso de que sea necesario puede hacerse uso de la cabecera ETag para validar si el resultado sigue siendo el mismo. De lo contrario se recomendaría notificar al cliente mediante un error HTTP *409 - Conflict*
 
 ### Operaciones bulk
 
@@ -267,9 +342,7 @@ Pongamos varios ejemplos:
 - Bulk: registrar varias acciones a un inversor
 - Batch: registrar varias acciones a varios inversores (por ejemplo en el caso de que el valor de las acciones baje de precio)
 
-Para ello es posible utilizar el método [PATCH](https://en.wikipedia.org/wiki/JSON_Patch) del recurso de manera que el body provea el listado de objetos a incorporar.
-
-<img src="doc/Patch.png" alt="Patch"/>
+Para ello es posible utilizar el método PATCH del recurso de manera que el body provea el listado de objetos a incorporar.
 
 Este tipo de operaciones pueden conllevar una baja performance por lo que podría ser necesario resolverlos de forma asíncrona (devolviendo *202 - Accepted*) o mediante la implementación de flujos en paralelo para una respuesta más rápida.
 
@@ -277,11 +350,13 @@ Este tipo de operaciones pueden conllevar una baja performance por lo que podría
 
 El patrón '[circuit breaker](https://microservices.io/patterns/reliability/circuit-breaker.html)' proporciona una capa de control de cara a posibles ataques DoS (Denegación de Servicio) y/o respuesta rápida ante posibles pérdidas de servicio.
 
-<img src="doc/" alt="Circuit breaker"/> PENDIENTE
-
 ### Reintentos
 
-PENDIENTE
+El patrón de reintentos tiene como objetivo lograr la estabilidad del sistema y trata de lograr el éxito de una llamada a otra, tratando que el sistema haga lo mejor que pueda para responder adecuadamente.
+
+Cuando se realiza una petición a una instancia, y esta falla por estar ocupada temporalmente (503), como caso particular el reintento debe realizarse en un período espaciado de tiempo, pues los reintentos continuos pueden traer consigo que la instancia se mantenga ocupada más tiempo (respondiendo que está ocupada) y no pueda procesar las nuevas solicitudes.
+
+El patrón de reintentos debe usarse cuando se interactua con sistemas externos que pueden llegar a un estado de fallos temporales y afectar la estabilidad de la plataforma.
 
 ### BTF (Backend to Frontend)
 
@@ -294,6 +369,27 @@ Existe una problemática específica para las aplicaciones multiplataforma: aquell
 **Inconvenientes:**
 - Sería necesario mantener ambas interfaces con un comportamiento muy similar
 
+### API first
+
+Se trata de una metodología de definición de APIs que prioriza la definición del contrato antes de empezar a lanzar el resto de procesos, como la implementación, testing, despliegue,...
+
+Sus principales ventajas son:
+
+- Reduce el time to market casi un 50%.
+- Mejora la calidad de la API puesto que permite que los consumidores puedan empezar a trabajar con el contrato sin haberse implementado y por tanto, es más susceptibles a cambios
+- Mejora los procesos: Del primer contrato se suelen automatizar el resto de fases, lo que hace que se automaticen los procesos.
+- Permite generar contract tests. Permite autogenerar las pruebas para los equipos de QA y desarrollo y además, que los equipos de Desarrollo puedan probarse con los tests realizados en QA
+- Mejora la seguridad. Al definir el contrato primero, permite validar la seguridad basada en la definición y encontrar bugs de seguridad antes de haber empezado a implementar nada.
+
+La metodología se implementa en 3 fases:
+
+- Fase de definición y mocking: Se define el contrato openapi, se valida y se genera un mocking para los clientes.
+- Fase de implementación: Gracias al contrato, desarrollamos tres actividades en paralelo:
+  * Definición de los tests: Se desarrollan los tests utilizando el mock server mientras que los desarrolladores terminan la implementación
+  * Desarrollo e implementación de la API: Utilizando herramientas de generación de arquetipos, como APIGen, generamos y desarrollamos la implementación de la API. Una vez desarrollada la API, se probarán con los tests automatizados por QA.
+  * Consumo de la API: Las apis se exponen a traves de las herramientas de api management apuntando al mock server, lo que le permite a los consumidores empezar a probar y desarrollar la funcionalidad y mejorar el contrato api conjuntamente con el desarrollador de la API.
+- Fase de integración: Una vez implementada la API debemos reapuntar la API del mockserver a la implementación realizada. 
+
 ## Bibliografía
 
 - [https://restfulapi.net/](https://restfulapi.net/)
@@ -303,3 +399,4 @@ Existe una problemática específica para las aplicaciones multiplataforma: aquell
 - [Spring HATEOAS](https://www.baeldung.com/spring-hateoas-tutorial)
 - [Spring JPA pagination](https://www.baeldung.com/spring-data-jpa-pagination-sorting)
 - [Swagger annotations](https://www.baeldung.com/spring-rest-openapi-documentation)
+- [API first](https://cloudappi.net/metodologia-api-first/)
