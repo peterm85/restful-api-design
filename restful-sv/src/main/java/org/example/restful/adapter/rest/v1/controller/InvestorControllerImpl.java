@@ -1,6 +1,6 @@
 package org.example.restful.adapter.rest.v1.controller;
 
-import org.example.restful.adapter.rest.RestfulAPIController;
+import org.example.restful.adapter.rest.HateoasUtils;
 import org.example.restful.adapter.rest.v1.converter.InvestorRequestToInvestorConverter;
 import org.example.restful.adapter.rest.v1.converter.InvestorToInvestorResponseConverter;
 import org.example.restful.domain.Investor;
@@ -41,7 +41,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @RequestMapping(InvestorControllerImpl.PATH)
-public class InvestorControllerImpl extends RestfulAPIController<InvestorResponse>
+public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
     implements InvestorController {
 
   public static final String PATH = "/api/v1/invest";
@@ -65,7 +65,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
     final InvestorResponse response =
         responseConverter.convert(investorService.getInvestorById(id));
 
-    applyHATEOAS(response, List.of(PUT, DELETE));
+    applyHATEOAS(response, getHateoasMap(response, List.of(PUT, DELETE)));
 
     return ResponseEntity.ok().body(response);
   }
@@ -80,7 +80,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
         .location(
             UriComponentsBuilder.newInstance()
                 .path(NEW_PATH.concat(SUBPATH))
-                .query("page=0&size=3")
+                .query("offset=" + PAGINATION_DEFAULT_OFFSET + "&limit=" + PAGINATION_DEFAULT_LIMIT)
                 .build()
                 .toUri())
         .build();
@@ -100,7 +100,7 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
 
     final InvestorResponse response = responseConverter.convert(investor);
 
-    applyHATEOAS(response, List.of(GET, PUT, DELETE));
+    applyHATEOAS(response, getHateoasMap(response, List.of(GET, PUT, DELETE)));
 
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
@@ -128,18 +128,25 @@ public class InvestorControllerImpl extends RestfulAPIController<InvestorRespons
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
-  @Override
-  protected Map<RequestMethod, WebMvcLinkBuilder> hateoasMap(InvestorResponse response) {
+  protected Map<RequestMethod, WebMvcLinkBuilder> getHateoasMap(
+      InvestorResponse response, List<RequestMethod> includedLinks) {
+
     Map<RequestMethod, WebMvcLinkBuilder> hateoasMap =
         new HashMap<RequestMethod, WebMvcLinkBuilder>();
 
-    hateoasMap.put(GET, linkTo(methodOn(this.getClass()).getInvestor(response.getId())));
-    hateoasMap.put(
-        PUT,
-        linkTo(
-            methodOn(this.getClass())
-                .updateInvestor(response.getId(), InvestorRequest.builder().build())));
-    hateoasMap.put(DELETE, linkTo(methodOn(this.getClass()).deleteInvestor(response.getId())));
+    if (includedLinks.contains(RequestMethod.GET)) {
+      hateoasMap.put(GET, linkTo(methodOn(this.getClass()).getInvestor(response.getId())));
+    }
+    if (includedLinks.contains(RequestMethod.PUT)) {
+      hateoasMap.put(
+          PUT,
+          linkTo(
+              methodOn(this.getClass())
+                  .updateInvestor(response.getId(), InvestorRequest.builder().build())));
+    }
+    if (includedLinks.contains(RequestMethod.DELETE)) {
+      hateoasMap.put(DELETE, linkTo(methodOn(this.getClass()).deleteInvestor(response.getId())));
+    }
 
     return hateoasMap;
   }

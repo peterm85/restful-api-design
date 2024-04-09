@@ -9,6 +9,7 @@ import lombok.Data;
 @Component
 @ConfigurationProperties(prefix = CacheTTL.CACHING_TAG)
 public class CacheTTL {
+
   public static final String CACHING_TAG = "caching";
   public static final String ALL_STOCKS_TLL_STRING = "${" + CacheTTL.CACHING_TAG + ".allStocksTTL}";
 

@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 @Builder
 public class InvestorResponse extends RepresentationModel<InvestorResponse> {
+
   @Schema(description = "Identification", example = "12345")
   private Long id;
 

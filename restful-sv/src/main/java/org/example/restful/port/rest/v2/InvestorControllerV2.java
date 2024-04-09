@@ -1,11 +1,11 @@
 package org.example.restful.port.rest.v2;
 
-import java.util.List;
-
 import org.example.restful.port.rest.v1.api.model.InvestorResponse;
-import org.example.restful.port.rest.v2.api.model.PageableRequest;
+import org.example.restful.port.rest.v2.api.model.InvestorResponsePage;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,7 +42,7 @@ public interface InvestorControllerV2 {
             description = "Server Error",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
       })
-  ResponseEntity<List<InvestorResponse>> getAllInvestors(
-      @Parameter(description = "Pageable criteria", example = "{\"page\": 0, \"size\": 3}")
-          PageableRequest pageableRequest);
+  ResponseEntity<InvestorResponsePage> getAllInvestors(
+      @Parameter(description = "Pageable offset", example = "0") final Optional<Long> offset,
+      @Parameter(description = "Pageable limit", example = "50") final Optional<Integer> limit);
 }

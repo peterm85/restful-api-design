@@ -1,15 +1,6 @@
 package org.example.restful.adapter.rest.v1.controller;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.security.RolesAllowed;
-import javax.validation.Valid;
-
-import org.example.restful.adapter.rest.RestfulAPIController;
+import org.example.restful.adapter.rest.HateoasUtils;
 import org.example.restful.adapter.rest.v1.converter.StockRequestToStockConverter;
 import org.example.restful.adapter.rest.v1.converter.StockToStockResponseConverter;
 import org.example.restful.domain.Stock;
@@ -35,6 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.fge.jsonpatch.JsonPatch;
 
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
 
 import static org.example.restful.constant.Roles.ADMIN;
@@ -47,8 +47,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 @RestController
 @RequestMapping(StockControllerImpl.PATH)
 @Slf4j
-public class StockControllerImpl extends RestfulAPIController<StockResponse>
-    implements StockController {
+public class StockControllerImpl extends HateoasUtils<StockResponse> implements StockController {
 
   public static final String PATH = "/api/v1/invest";
   public static final String SLASH = "/";
@@ -69,8 +68,6 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
 
     final List<StockResponse> responses = responseConverter.convert(stockService.getAllStocks());
 
-    applyHATEOAS(responses, List.of(GET, PATCH));
-
     return ResponseEntity.ok()
         .cacheControl(CacheControl.maxAge(cacheTTL.getAllStocksTTL(), TimeUnit.MILLISECONDS))
         .lastModified(Instant.now())
@@ -90,7 +87,7 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
 
     final StockResponse response = responseConverter.convert(stock);
 
-    applyHATEOAS(response, List.of(GET, PATCH));
+    applyHATEOAS(response, getHateoasMap(response, List.of(GET, PATCH)));
 
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
@@ -107,20 +104,24 @@ public class StockControllerImpl extends RestfulAPIController<StockResponse>
 
     final StockResponse response = responseConverter.convert(stockService.modifyStock(isin, patch));
 
-    applyHATEOAS(response, List.of(GET, PATCH));
+    applyHATEOAS(response, getHateoasMap(response, List.of(GET, PATCH)));
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
-  @Override
-  protected Map<RequestMethod, WebMvcLinkBuilder> hateoasMap(final StockResponse response) {
+  protected Map<RequestMethod, WebMvcLinkBuilder> getHateoasMap(
+      final StockResponse response, List<RequestMethod> includedLinks) {
+
     Map<RequestMethod, WebMvcLinkBuilder> hateoasMap =
         new HashMap<RequestMethod, WebMvcLinkBuilder>();
     try {
-
-      hateoasMap.put(GET, linkTo(methodOn(this.getClass()).getAllStocks()));
-      hateoasMap.put(
-          PATCH, linkTo(methodOn(this.getClass()).modifyStock(response.getIsin(), null)));
+      if (includedLinks.contains(RequestMethod.GET)) {
+        hateoasMap.put(GET, linkTo(methodOn(this.getClass()).getAllStocks()));
+      }
+      if (includedLinks.contains(RequestMethod.PATCH)) {
+        hateoasMap.put(
+            PATCH, linkTo(methodOn(this.getClass()).modifyStock(response.getIsin(), null)));
+      }
     } catch (Exception ex) {
       log.error("Error during hateoasMap construction: {}", ex.getMessage());
     }

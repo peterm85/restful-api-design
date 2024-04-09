@@ -1,39 +1,31 @@
 package org.example.restful.adapter.rest.v2.controller;
 
-import org.example.restful.adapter.rest.RestfulAPIController;
-import org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl;
+import org.example.restful.adapter.rest.HateoasUtils;
 import org.example.restful.adapter.rest.v1.converter.InvestorToInvestorResponseConverter;
-import org.example.restful.port.rest.v1.api.model.InvestorRequest;
-import org.example.restful.port.rest.v1.api.model.InvestorResponse;
+import org.example.restful.domain.Investor;
 import org.example.restful.port.rest.v2.InvestorControllerV2;
-import org.example.restful.port.rest.v2.api.model.PageableRequest;
+import org.example.restful.port.rest.v2.api.model.InvestorResponsePage;
 import org.example.restful.service.InvestorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
-import javax.validation.Valid;
 
 import static org.example.restful.constant.Roles.ADMIN;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+@SuppressWarnings("rawtypes")
 @RestController
 @RequestMapping(InvestorControllerV2Impl.PATH)
-public class InvestorControllerV2Impl extends RestfulAPIController<InvestorResponse>
-    implements InvestorControllerV2 {
+public class InvestorControllerV2Impl extends HateoasUtils implements InvestorControllerV2 {
 
   public static final String PATH = "/api/v2/invest";
   public static final String SLASH = "/";
@@ -43,34 +35,25 @@ public class InvestorControllerV2Impl extends RestfulAPIController<InvestorRespo
 
   @Autowired private InvestorToInvestorResponseConverter converter;
 
+  @SuppressWarnings("unchecked")
   @Override
   @RolesAllowed(ADMIN)
   @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<InvestorResponse>> getAllInvestors(
-      @Valid final PageableRequest pageableRequest) {
+  public ResponseEntity<InvestorResponsePage> getAllInvestors(
+      final Optional<Long> offset, final Optional<Integer> limit) {
 
-    final List<InvestorResponse> response =
-        converter.convert(
-            investorService.getAllInvestors(pageableRequest.getPage(), pageableRequest.getSize()));
+    final Pageable pageable = getPageable(offset, limit);
 
-    applyHATEOAS(response, List.of(PUT, DELETE));
+    final Page<Investor> resultPage = investorService.getAllInvestors(pageable);
 
-    return ResponseEntity.ok(response);
-  }
-
-  @Override
-  protected Map<RequestMethod, WebMvcLinkBuilder> hateoasMap(InvestorResponse response) {
-    Map<RequestMethod, WebMvcLinkBuilder> hateoasMap =
-        new HashMap<RequestMethod, WebMvcLinkBuilder>();
-
-    hateoasMap.put(
-        PUT,
-        linkTo(
-            methodOn(InvestorControllerImpl.class)
-                .updateInvestor(response.getId(), InvestorRequest.builder().build())));
-    hateoasMap.put(
-        DELETE, linkTo(methodOn(InvestorControllerImpl.class).deleteInvestor(response.getId())));
-
-    return hateoasMap;
+    return ResponseEntity.ok(
+        InvestorResponsePage.builder()
+            .data(resultPage.map(converter::convert).stream().collect(Collectors.toList()))
+            .pagination(
+                getPagination(
+                    offset.orElse(PAGINATION_DEFAULT_OFFSET),
+                    limit.orElse(PAGINATION_DEFAULT_LIMIT),
+                    resultPage.getTotalElements()))
+            .build());
   }
 }

@@ -48,7 +48,7 @@ public class GetAllInvestorsRestIT {
   @WithMockUser(roles = ADMIN)
   public void whenGetAllInvestors_thenStatus409() throws Exception {
     // given
-    final String expectedLocationRedirection = V2_PATH + V2_SUBPATH + "?page=0&size=3";
+    final String expectedLocationRedirection = V2_PATH + V2_SUBPATH + "?offset=0&limit=30";
 
     // when then
     mvc.perform(get(V1_PATH + V1_SUBPATH).contentType(MediaType.APPLICATION_JSON))
@@ -66,23 +66,23 @@ public class GetAllInvestorsRestIT {
     // when then
     mvc.perform(
             get(V2_PATH + V2_SUBPATH)
-                .queryParam("page", "1")
-                .queryParam("size", "3")
+                .queryParam("offset", "0")
+                .queryParam("limit", "3")
                 .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].idNumber", is("56245881H")))
-        .andExpect(jsonPath("$[1].idNumber", is("71005791S")))
-        .andExpect(jsonPath("$[2].idNumber", is("70335591K")));
+        .andExpect(jsonPath("$.data", hasSize(3)))
+        .andExpect(jsonPath("$.data.[0].idNumber", is("76245691H")))
+        .andExpect(jsonPath("$.data.[1].idNumber", is("03241601G")))
+        .andExpect(jsonPath("$.data.[2].idNumber", is("21115691P")));
   }
 
   @Test
   @WithMockUser(roles = ADMIN)
-  public void givenNoPageNoneSizewhenGetAllInvestorsV2_thenStatus400() throws Exception {
+  public void givenNoPageNoneSizewhenGetAllInvestorsV2_thenStatus200() throws Exception {
     // when then
     mvc.perform(get(V2_PATH + V2_SUBPATH).contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isOk());
   }
 
   @Test
@@ -91,8 +91,8 @@ public class GetAllInvestorsRestIT {
     // when then
     mvc.perform(
             get(V2_PATH + V2_SUBPATH)
-                .queryParam("page", "1")
-                .queryParam("size", "3")
+                .queryParam("offset", "0")
+                .queryParam("limit", "3")
                 .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));

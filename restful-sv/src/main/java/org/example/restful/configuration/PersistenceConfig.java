@@ -4,5 +4,5 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories("org.example.restful.port.repository")
+@EnableJpaRepositories("org.example.restful.adapter.repository")
 public class PersistenceConfig {}

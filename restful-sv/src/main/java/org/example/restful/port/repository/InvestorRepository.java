@@ -1,12 +1,16 @@
 package org.example.restful.port.repository;
 
-import org.example.restful.port.repository.entity.InvestorEntity;
+import org.example.restful.domain.Investor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface InvestorRepository extends PagingAndSortingRepository<InvestorEntity, Long> {
+public interface InvestorRepository {
 
-  @Override
-  Page<InvestorEntity> findAll(Pageable pageable);
+  Investor getById(Long id);
+
+  Page<Investor> findAll(Pageable pageable);
+
+  Investor save(Investor investor);
+
+  void delete(Long id);
 }
