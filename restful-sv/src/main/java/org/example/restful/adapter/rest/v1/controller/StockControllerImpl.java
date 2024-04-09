@@ -102,7 +102,7 @@ public class StockControllerImpl extends HateoasUtils<StockResponse> implements 
       @PathVariable final String isin, @RequestBody final JsonPatch patch) {
     log.info("Modifying stock {}", isin);
 
-    final StockResponse response = responseConverter.convert(stockService.modifyStock(isin, patch));
+    final StockResponse response = responseConverter.convert(stockService.updateStock(isin, patch));
 
     applyHATEOAS(response, getHateoasMap(response, List.of(GET, PATCH)));
 

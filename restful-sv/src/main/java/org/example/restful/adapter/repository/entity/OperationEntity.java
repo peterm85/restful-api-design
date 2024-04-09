@@ -1,4 +1,4 @@
-package org.example.restful.port.repository.entity;
+package org.example.restful.adapter.repository.entity;
 
 import java.time.Instant;
 

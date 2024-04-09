@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.example.restful.adapter.repository.entity.StockEntity;
 import org.example.restful.domain.Stock;
-import org.example.restful.port.repository.entity.StockEntity;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

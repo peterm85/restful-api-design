@@ -2,11 +2,11 @@ package org.example.restful.adapter.repository;
 
 import org.example.restful.adapter.repository.converter.InvestorEntityToInvestorConverter;
 import org.example.restful.adapter.repository.converter.InvestorToInvestorEntityConverter;
+import org.example.restful.adapter.repository.entity.InvestorEntity;
 import org.example.restful.domain.Investor;
 import org.example.restful.exception.InvestorException;
 import org.example.restful.exception.InvestorNotFoundException;
 import org.example.restful.port.repository.InvestorRepository;
-import org.example.restful.port.repository.entity.InvestorEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -17,11 +17,13 @@ import org.springframework.stereotype.Repository;
 public class InvestorRepositoryImpl implements InvestorRepository {
 
   @Autowired private InvestorJpaRepository investorJpaRepository;
+
   @Autowired private InvestorEntityToInvestorConverter entityConverter;
   @Autowired private InvestorToInvestorEntityConverter domainConverter;
 
   @Override
   public Page<Investor> findAll(final Pageable pageable) {
+
     return investorJpaRepository.findAll(pageable).map(entityConverter::convert);
   }
 

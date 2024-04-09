@@ -2,11 +2,11 @@ package org.example.restful.service;
 
 import org.example.restful.adapter.repository.converter.OperationEntityToOperationConverter;
 import org.example.restful.adapter.repository.converter.OperationToOperationEntityConverter;
+import org.example.restful.adapter.repository.entity.OperationEntity;
 import org.example.restful.domain.Investor;
 import org.example.restful.domain.Operation;
 import org.example.restful.domain.Stock;
 import org.example.restful.port.repository.TradingRepository;
-import org.example.restful.port.repository.entity.OperationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

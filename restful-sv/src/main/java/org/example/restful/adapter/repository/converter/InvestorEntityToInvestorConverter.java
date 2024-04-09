@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.example.restful.adapter.repository.entity.InvestorEntity;
 import org.example.restful.domain.Investor;
-import org.example.restful.port.repository.entity.InvestorEntity;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;

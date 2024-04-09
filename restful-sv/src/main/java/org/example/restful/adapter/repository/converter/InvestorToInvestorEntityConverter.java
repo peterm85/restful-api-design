@@ -1,7 +1,7 @@
 package org.example.restful.adapter.repository.converter;
 
+import org.example.restful.adapter.repository.entity.InvestorEntity;
 import org.example.restful.domain.Investor;
-import org.example.restful.port.repository.entity.InvestorEntity;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
