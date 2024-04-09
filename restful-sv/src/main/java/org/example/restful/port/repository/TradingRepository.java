@@ -1,6 +1,8 @@
 package org.example.restful.port.repository;
 
-import org.example.restful.adapter.repository.entity.OperationEntity;
-import org.springframework.data.repository.CrudRepository;
+import org.example.restful.domain.Operation;
 
-public interface TradingRepository extends CrudRepository<OperationEntity, Long> {}
+public interface TradingRepository {
+
+  Operation purchase(Operation operation);
+}

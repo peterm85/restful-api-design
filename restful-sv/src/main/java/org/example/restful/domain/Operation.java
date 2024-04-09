@@ -7,8 +7,8 @@ import lombok.Data;
 @Builder
 public class Operation {
   private Long id;
-  private String isin;
-  private String idNumber;
+  private Stock stock;
+  private Investor investor;
   private Integer amount;
   private Double limitedPrize;
   private OrderType orderType;

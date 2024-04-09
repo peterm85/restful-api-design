@@ -17,8 +17,8 @@ public class OperationToPurchaseResponseConverter
     } else {
       return PurchaseResponse.builder()
           .id(domain.getId())
-          .isin(domain.getIsin())
-          .idNumber(domain.getIdNumber())
+          .isin(domain.getStock().getIsin())
+          .idNumber(domain.getInvestor().getIdNumber())
           .amount(domain.getAmount())
           .limitedPrize(domain.getLimitedPrize())
           .orderType(OrderTypeRequest.valueOf(domain.getOrderType().name()))
