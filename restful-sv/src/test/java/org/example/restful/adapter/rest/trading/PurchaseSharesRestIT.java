@@ -1,4 +1,4 @@
-package org.example.restful.adapter.rest.v1.controller;
+package org.example.restful.adapter.rest.trading;
 
 import org.example.restful.port.rest.v1.api.model.OrderTypeRequest;
 import org.example.restful.port.rest.v1.api.model.PurchaseRequest;
@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class TradingControllerImplIntegrationTest {
+public class PurchaseSharesRestIT {
 
   @Autowired private MockMvc mvc;
 
