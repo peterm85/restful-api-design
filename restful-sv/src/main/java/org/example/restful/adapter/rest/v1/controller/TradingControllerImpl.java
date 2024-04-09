@@ -1,8 +1,5 @@
 package org.example.restful.adapter.rest.v1.controller;
 
-import javax.annotation.security.RolesAllowed;
-import javax.validation.Valid;
-
 import org.example.restful.adapter.rest.v1.converter.OperationToPurchaseResponseConverter;
 import org.example.restful.adapter.rest.v1.converter.PurchaseRequestToOperationConverter;
 import org.example.restful.domain.Operation;
@@ -20,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
+
 import static org.example.restful.constant.Roles.USER;
 
 @RestController
@@ -29,7 +29,7 @@ public class TradingControllerImpl implements TradingController {
   public static final String PATH = "/api/v1/invest";
   public static final String SLASH = "/";
   public static final String SUBPATH = SLASH + "investor";
-  private static final String ID_PATH_PARAM = SLASH + "{idNumber}";
+  private static final String ID_PATH_PARAM = SLASH + "{id}";
   public static final String PURCHASE_OPERATION = SLASH + "purchase";
   private static final String PURCHASE_OPERATION_PATH =
       SUBPATH + ID_PATH_PARAM + PURCHASE_OPERATION;
@@ -43,11 +43,10 @@ public class TradingControllerImpl implements TradingController {
   @RolesAllowed(USER)
   @PostMapping(value = PURCHASE_OPERATION_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<PurchaseResponse> purchase(
-      @PathVariable final String idNumber,
-      @Valid @RequestBody final PurchaseRequest purchaseRequest) {
+      @PathVariable final Long id, @Valid @RequestBody final PurchaseRequest purchaseRequest) {
 
     final Operation operation =
-        tradingService.purchase(idNumber, requestConverter.convert(purchaseRequest));
+        tradingService.purchase(id, requestConverter.convert(purchaseRequest));
 
     return ResponseEntity.status(HttpStatus.CREATED).body(responseConverter.convert(operation));
   }

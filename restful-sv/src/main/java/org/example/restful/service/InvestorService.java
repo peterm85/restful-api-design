@@ -1,10 +1,9 @@
 package org.example.restful.service;
 
-import java.util.List;
-
 import org.example.restful.adapter.repository.converter.InvestorEntityToInvestorConverter;
 import org.example.restful.adapter.repository.converter.InvestorToInvestorEntityConverter;
 import org.example.restful.domain.Investor;
+import org.example.restful.exception.InvestorException;
 import org.example.restful.exception.InvestorNotFoundException;
 import org.example.restful.port.repository.InvestorRepository;
 import org.example.restful.port.repository.entity.InvestorEntity;
@@ -13,6 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,10 +26,10 @@ public class InvestorService {
   @Autowired private InvestorEntityToInvestorConverter entityConverter;
   @Autowired private InvestorToInvestorEntityConverter domainConverter;
 
-  public Investor getInvestorByIdNumber(final String idNumber) {
+  public Investor getInvestorById(final Long id) {
 
     return investorRepository
-        .findByIdNumber(idNumber)
+        .findById(id)
         .map(entityConverter::convert)
         .orElseThrow(InvestorNotFoundException::new);
   }
@@ -47,36 +48,28 @@ public class InvestorService {
 
       return entityConverter.convert(newEntity);
     } catch (DataIntegrityViolationException e) {
-      if (e.getMessage().contains(InvestorEntity.UNIQUE_ID_NUMBER_CONSTRAINT)) {
-        return getInvestorByIdNumber(investor.getIdNumber());
-      } else {
-        throw e;
-      }
+      throw new InvestorException(
+          String.format("Investor {} already exists", investor.getIdNumber()));
     }
   }
 
-  public void updateInvestor(final Investor investor) {
+  public void updateInvestor(final Long id, final Investor investor) {
 
-    Investor investorFromDb =
-        investorRepository
-            .findByIdNumber(investor.getIdNumber())
-            .map(entityConverter::convert)
-            .orElseThrow(InvestorNotFoundException::new);
+    investorRepository.findById(id).orElseThrow(InvestorNotFoundException::new);
 
-    investor.setId(investorFromDb.getId());
-
+    investor.setId(id);
     investorRepository.save(domainConverter.convert(investor));
   }
 
-  public void deleteInvestor(final String idNumber) {
+  public void deleteInvestor(final Long id) {
 
     try {
       final InvestorEntity investor =
-          investorRepository.findByIdNumber(idNumber).orElseThrow(InvestorNotFoundException::new);
+          investorRepository.findById(id).orElseThrow(InvestorNotFoundException::new);
 
       investorRepository.delete(investor);
     } catch (InvestorNotFoundException nfe) {
-      log.debug("Investor {} not found", idNumber);
+      log.debug("Investor {} not found", id);
     }
   }
 }

@@ -1,12 +1,6 @@
 package org.example.restful.configuration;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.example.restful.exception.InvestorException;
 import org.example.restful.exception.InvestorNotFoundException;
 import org.example.restful.exception.JsonPatchFormatException;
 import org.example.restful.exception.StockNotFoundException;
@@ -22,6 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,6 +41,19 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
         ex.getMessage());
 
     return new Error("ERR404", ex.getMessage());
+  }
+
+  @ExceptionHandler({InvestorException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public final Error handleInvestorExceptions(final Exception ex, final WebRequest request) {
+    log.error(
+        "Response to {} with status {} and body {}",
+        request,
+        HttpStatus.BAD_REQUEST,
+        ex.getMessage());
+
+    return new Error("ERR400", ex.getMessage());
   }
 
   @ExceptionHandler(value = {AccessDeniedException.class})

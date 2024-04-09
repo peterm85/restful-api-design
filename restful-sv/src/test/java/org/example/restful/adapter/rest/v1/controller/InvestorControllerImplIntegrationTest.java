@@ -49,12 +49,12 @@ public class InvestorControllerImplIntegrationTest {
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void givenIdNumber_whenGetInvestorByIdNumber_thenStatus200() throws Exception {
+  public void givenIdNumber_whenGetInvestorById_thenStatus200() throws Exception {
     // given
-    final String idNumber = "76245691H";
+    final Long id = 1L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.idNumber", is("76245691H")))
@@ -70,10 +70,10 @@ public class InvestorControllerImplIntegrationTest {
   public void givenIdNumberAndXMLAcceptHeader_whenGetInvestorByIdNumber_thenStatus200()
       throws Exception {
     // given
-    final String idNumber = "76245691H";
+    final Long id = 1L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).accept(MediaType.APPLICATION_XML))
+    mvc.perform(get(PATH + SUBPATH + SLASH + id).accept(MediaType.APPLICATION_XML))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML));
   }
@@ -87,10 +87,10 @@ public class InvestorControllerImplIntegrationTest {
   public void givenIdNumberAndPDFAcceptHeader_whenGetInvestorByIdNumber_thenStatus406()
       throws Exception {
     // given
-    final String idNumber = "76245691H";
+    final Long id = 1L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).accept(MediaType.APPLICATION_PDF))
+    mvc.perform(get(PATH + SUBPATH + SLASH + id).accept(MediaType.APPLICATION_PDF))
         .andExpect(status().isNotAcceptable());
   }
 
@@ -98,10 +98,10 @@ public class InvestorControllerImplIntegrationTest {
   @WithMockUser(roles = "INVALID")
   public void givenInvalidAuthRole_whenGetInvestorByIdNumber_thenStatus401() throws Exception {
     // given
-    final String idNumber = "76245691H";
+    final Long id = 1L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
   }
@@ -114,10 +114,10 @@ public class InvestorControllerImplIntegrationTest {
   })
   public void givenWrongIdNumber_whenGetInvestorByIdNumber_thenStatus404() throws Exception {
     // given
-    final String idNumber = "76245691Y";
+    final Long id = 10L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.code", is("ERR404")))
@@ -164,7 +164,7 @@ public class InvestorControllerImplIntegrationTest {
   @Test
   @WithMockUser(roles = USER)
   @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
-  public void givenAnAlreadyCreatedInvestor_whenCreateInvestor_thenStatus201() throws Exception {
+  public void givenAnAlreadyCreatedInvestor_whenCreateInvestor_thenStatus400() throws Exception {
     // given
     final InvestorRequest request =
         InvestorRequest.builder()
@@ -184,10 +184,8 @@ public class InvestorControllerImplIntegrationTest {
 
     mvc.perform(
             post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
-        .andExpect(status().isCreated())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.idNumber", is("76245691H")))
-        .andExpect(jsonPath("$.name", is("Manuel Rodriguez")));
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
   }
 
   @Test
@@ -209,13 +207,13 @@ public class InvestorControllerImplIntegrationTest {
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void whenUpdateInvestor_thenStatus200() throws Exception {
+  public void whenUpdateInvestor_thenStatus204() throws Exception {
     // given
-    final String idNumber = "76245691H";
+    final Long id = 1L;
 
     final InvestorRequest request =
         InvestorRequest.builder()
-            .idNumber(idNumber)
+            .idNumber("76245691H")
             .name("Manolo Rodriguez")
             .age(38)
             .country("SPAIN")
@@ -223,10 +221,12 @@ public class InvestorControllerImplIntegrationTest {
 
     // when then
     mvc.perform(
-            put(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+            put(PATH + SUBPATH + SLASH + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
         .andExpect(status().isNoContent());
 
-    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.idNumber", is("76245691H")))
@@ -238,11 +238,11 @@ public class InvestorControllerImplIntegrationTest {
   @WithMockUser(roles = USER)
   public void givenNoInvestor_whenUpdateInvestor_thenStatus404() throws Exception {
     // given
-    final String idNumber = "76245691H";
+    final Long id = 10L;
 
     final InvestorRequest request =
         InvestorRequest.builder()
-            .idNumber(idNumber)
+            .idNumber("76245691H")
             .name("Manolo Rodriguez")
             .age(38)
             .country("SPAIN")
@@ -250,7 +250,9 @@ public class InvestorControllerImplIntegrationTest {
 
     // when then
     mvc.perform(
-            put(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+            put(PATH + SUBPATH + SLASH + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
         .andExpect(status().isNotFound());
   }
 
@@ -260,15 +262,15 @@ public class InvestorControllerImplIntegrationTest {
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void whenDeteInvestor_thenStatus204() throws Exception {
+  public void whenDeleteInvestor_thenStatus204() throws Exception {
     // given
-    final String idNumber = "76245691H";
+    final Long id = 1L;
 
     // when then
-    mvc.perform(delete(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(delete(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
 
-    mvc.perform(get(PATH + SUBPATH + SLASH + idNumber).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 

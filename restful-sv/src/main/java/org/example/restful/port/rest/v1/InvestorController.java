@@ -1,11 +1,11 @@
 package org.example.restful.port.rest.v1;
 
-import java.util.List;
-
 import org.example.restful.port.rest.v1.api.model.InvestorRequest;
 import org.example.restful.port.rest.v1.api.model.InvestorResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,7 +53,7 @@ public interface InvestorController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
       })
   ResponseEntity<InvestorResponse> getInvestor(
-      @Parameter(description = "Identification number", example = "76245691H") String idNumber);
+      @Parameter(description = "Identification", example = "12345") Long id);
 
   @Operation(summary = "Returns all investors", deprecated = true)
   @ApiResponses(
@@ -118,7 +118,7 @@ public interface InvestorController {
             description = "Server Error",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
       })
-  ResponseEntity updateInvestor(InvestorRequest investorRequest);
+  ResponseEntity updateInvestor(Long id, InvestorRequest investorRequest);
 
   @SuppressWarnings("rawtypes")
   @Operation(summary = "Delete an investor")
@@ -142,5 +142,5 @@ public interface InvestorController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
       })
   ResponseEntity deleteInvestor(
-      @Parameter(description = "Identification number", example = "76245691H") String idNumber);
+      @Parameter(description = "Identification", example = "12345") Long id);
 }

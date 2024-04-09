@@ -54,7 +54,7 @@ public class TradingControllerImplIntegrationTest {
   public void whenPurchaseShares_thenStatus201() throws Exception {
     // given
     final String isin = "ES0105611000";
-    final String idNumber = "76245691H";
+    final Long id = 1L;
 
     final PurchaseRequest request =
         PurchaseRequest.builder()
@@ -66,7 +66,7 @@ public class TradingControllerImplIntegrationTest {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH + SLASH + idNumber + SLASH + PURCHASE_OPERATION)
+            post(PATH + SUBPATH + SLASH + id + SLASH + PURCHASE_OPERATION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isCreated())
@@ -80,13 +80,13 @@ public class TradingControllerImplIntegrationTest {
   public void givenIncompletedBodyRequest_whenPurchaseShares_thenStatus400() throws Exception {
     // given
     final String isin = "ES0105611000";
-    final String idNumber = "76245691H";
+    final Long id = 1L;
 
     final PurchaseRequest request = PurchaseRequest.builder().isin(isin).build();
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH + SLASH + idNumber + SLASH + PURCHASE_OPERATION)
+            post(PATH + SUBPATH + SLASH + id + SLASH + PURCHASE_OPERATION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isBadRequest())
@@ -98,7 +98,7 @@ public class TradingControllerImplIntegrationTest {
   public void givenInvalidAuthRole_whenPurchaseShares_thenStatus401() throws Exception {
     // given
     final String isin = "ES0105611000";
-    final String idNumber = "76245691H";
+    final Long id = 1L;
 
     final PurchaseRequest request =
         PurchaseRequest.builder()
@@ -110,7 +110,7 @@ public class TradingControllerImplIntegrationTest {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH + SLASH + idNumber + SLASH + PURCHASE_OPERATION)
+            post(PATH + SUBPATH + SLASH + id + SLASH + PURCHASE_OPERATION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isUnauthorized())
@@ -118,7 +118,7 @@ public class TradingControllerImplIntegrationTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"MX0105611000,76245691H", "ES0105611000,86245691H"})
+  @CsvSource({"MX0105611000,1", "ES0105611000,10"})
   @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
@@ -128,8 +128,8 @@ public class TradingControllerImplIntegrationTest {
         executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void givenAnUnknowStockOrInvestor_whenPurchaseShares_thenStatus404(
-      String isin, String idNumber) throws Exception {
+  public void givenAnUnknowStockOrInvestor_whenPurchaseShares_thenStatus404(String isin, Long id)
+      throws Exception {
     // given
     final PurchaseRequest request =
         PurchaseRequest.builder()
@@ -141,7 +141,7 @@ public class TradingControllerImplIntegrationTest {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH + SLASH + idNumber + SLASH + PURCHASE_OPERATION)
+            post(PATH + SUBPATH + SLASH + id + SLASH + PURCHASE_OPERATION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isNotFound());

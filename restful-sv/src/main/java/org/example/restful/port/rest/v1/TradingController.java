@@ -36,6 +36,6 @@ public interface TradingController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
       })
   ResponseEntity<PurchaseResponse> purchase(
-      @Parameter(description = "Identification number", example = "76245691H") String idNumber,
+      @Parameter(description = "Identification", example = "12345") Long id,
       PurchaseRequest purchaseRequest);
 }

@@ -1,12 +1,5 @@
 package org.example.restful.adapter.rest.v2.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.security.RolesAllowed;
-import javax.validation.Valid;
-
 import org.example.restful.adapter.rest.RestfulAPIController;
 import org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl;
 import org.example.restful.adapter.rest.v1.converter.InvestorToInvestorResponseConverter;
@@ -23,6 +16,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 
 import static org.example.restful.constant.Roles.ADMIN;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -67,10 +67,9 @@ public class InvestorControllerV2Impl extends RestfulAPIController<InvestorRespo
         PUT,
         linkTo(
             methodOn(InvestorControllerImpl.class)
-                .updateInvestor(InvestorRequest.builder().build())));
+                .updateInvestor(response.getId(), InvestorRequest.builder().build())));
     hateoasMap.put(
-        DELETE,
-        linkTo(methodOn(InvestorControllerImpl.class).deleteInvestor(response.getIdNumber())));
+        DELETE, linkTo(methodOn(InvestorControllerImpl.class).deleteInvestor(response.getId())));
 
     return hateoasMap;
   }
