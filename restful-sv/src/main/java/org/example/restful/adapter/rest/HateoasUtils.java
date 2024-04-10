@@ -19,7 +19,7 @@ public abstract class HateoasUtils<T extends RepresentationModel<T>> {
 
   public static final Long PAGINATION_DEFAULT_OFFSET = 0L;
 
-  private static String OFFSET = "offset";
+  private static final String OFFSET = "offset";
 
   @Autowired protected CacheTTL cacheTTL;
 
@@ -29,13 +29,9 @@ public abstract class HateoasUtils<T extends RepresentationModel<T>> {
   }
 
   protected PageRequest getPageable(final Optional<Long> offset, final Optional<Integer> limit) {
-    try {
-      return PageRequest.of(
-          (int) (offset.orElse(PAGINATION_DEFAULT_OFFSET) / limit.orElse(PAGINATION_DEFAULT_LIMIT)),
-          limit.orElse(PAGINATION_DEFAULT_LIMIT));
-    } catch (Exception e) {
-      throw e;
-    }
+    return PageRequest.of(
+        (int) (offset.orElse(PAGINATION_DEFAULT_OFFSET) / limit.orElse(PAGINATION_DEFAULT_LIMIT)),
+        limit.orElse(PAGINATION_DEFAULT_LIMIT));
   }
 
   protected PaginationLinks getPagination(

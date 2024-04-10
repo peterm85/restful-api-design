@@ -62,16 +62,37 @@ public class GetAllInvestorsRestIT {
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void givenPageAndSizewhenGetAllInvestorsV2_thenStatus200() throws Exception {
+  public void givenPageAndSizewhenGetAllInvestorsV2_thenStatus206() throws Exception {
     // when then
     mvc.perform(
             get(V2_PATH + V2_SUBPATH)
                 .queryParam("offset", "0")
                 .queryParam("limit", "3")
                 .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
+        .andExpect(status().isPartialContent())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.data", hasSize(3)))
+        .andExpect(jsonPath("$.data.[0].idNumber", is("76245691H")))
+        .andExpect(jsonPath("$.data.[1].idNumber", is("03241601G")))
+        .andExpect(jsonPath("$.data.[2].idNumber", is("21115691P")));
+  }
+
+  @Test
+  @WithMockUser(roles = ADMIN)
+  @SqlGroup({
+    @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
+    @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
+  })
+  public void givenPageAndSizewhenGetAllInvestorsV2_thenStatus200() throws Exception {
+    // when then
+    mvc.perform(
+            get(V2_PATH + V2_SUBPATH)
+                .queryParam("offset", "0")
+                .queryParam("limit", "10")
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.data", hasSize(6)))
         .andExpect(jsonPath("$.data.[0].idNumber", is("76245691H")))
         .andExpect(jsonPath("$.data.[1].idNumber", is("03241601G")))
         .andExpect(jsonPath("$.data.[2].idNumber", is("21115691P")));

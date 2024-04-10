@@ -30,6 +30,13 @@ public interface InvestorControllerV2 {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = InvestorResponse.class))),
         @ApiResponse(
+            responseCode = "206",
+            description = "Partial content",
+            content =
+                @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = InvestorResponse.class))),
+        @ApiResponse(
             responseCode = "400",
             description = "Bad request",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),

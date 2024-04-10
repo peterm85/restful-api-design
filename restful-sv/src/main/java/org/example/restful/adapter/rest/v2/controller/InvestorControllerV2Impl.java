@@ -9,6 +9,7 @@ import org.example.restful.service.InvestorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,14 +47,21 @@ public class InvestorControllerV2Impl extends HateoasUtils implements InvestorCo
 
     final Page<Investor> resultPage = investorService.getAllInvestors(pageable);
 
-    return ResponseEntity.ok(
-        InvestorResponsePage.builder()
-            .data(resultPage.map(converter::convert).stream().collect(Collectors.toList()))
-            .pagination(
-                getPagination(
-                    offset.orElse(PAGINATION_DEFAULT_OFFSET),
-                    limit.orElse(PAGINATION_DEFAULT_LIMIT),
-                    resultPage.getTotalElements()))
-            .build());
+    return ResponseEntity.status(calculateStatus(resultPage))
+        .body(
+            InvestorResponsePage.builder()
+                .data(resultPage.map(converter::convert).stream().collect(Collectors.toList()))
+                .pagination(
+                    getPagination(
+                        offset.orElse(PAGINATION_DEFAULT_OFFSET),
+                        limit.orElse(PAGINATION_DEFAULT_LIMIT),
+                        resultPage.getTotalElements()))
+                .build());
+  }
+
+  private HttpStatus calculateStatus(final Page<Investor> resultPage) {
+    return resultPage.getTotalElements() > resultPage.getSize()
+        ? HttpStatus.PARTIAL_CONTENT
+        : HttpStatus.OK;
   }
 }
