@@ -1,6 +1,6 @@
 # restful-sv
 
-* **Version:** 1.0.3-SNAPSHOT
+* **Version:** 1.0.4-SNAPSHOT
 * **Description:** RESTful API example service
 
 ## REST Endpoints
