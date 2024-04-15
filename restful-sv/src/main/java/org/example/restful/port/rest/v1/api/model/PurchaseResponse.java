@@ -2,9 +2,9 @@ package org.example.restful.port.rest.v1.api.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
 public class PurchaseResponse {
   @Schema(description = "Operation id", example = "1")

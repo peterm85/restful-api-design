@@ -36,9 +36,9 @@ Existen diferentes tipos de APIs:
 - Cacheable, permite una mejor performance
 
 
-API RESTful no es más que la implementación de una API utilizando la arquitectura REST.
+La palabra RESTful describe a aquellas APIs o servicios que se adhieren a los principios REST. Para ello una API RESTful debe seguir las reglas y buenas prácticas definidas por REST.
 
-Sólo con las restricciones vistas en el punto anterior aún queda todo bastante abierto a la interpretación de cada desarrollador. Por ello, aunque no hay un estándar claro aceptado por la comunidad, sí se hace necesario una serie de reglas y buenas prácticas que ayuden a obtener APIs RESTful de calidad.
+Sólo con las restricciones vistas en el punto anterior aún queda todo bastante abierto a la interpretación de cada desarrollador. Por ello, aunque no hay un estándar claro aceptado por la comunidad, sí se hace necesario detallar unas buenas prácticas que ayuden a obtener APIs RESTful de calidad.
 
 Para ello tendremos en cuenta los siguientes objetivos:
 - Hacerla sencilla y fácil de usar para los desarrolladores. La calidad de una API es directamente proporcional a la facilidad de su integración.
@@ -94,13 +94,13 @@ ACTIONS
 
 ### Negociación del contenido
 
-Ofrece la posibilidad de que un cliente pueda solicitar la información de un recurso bajo un formato determinado:
+Ofrece la posibilidad de que un cliente pueda solicitar la información de un recurso bajo un formato o idioma determinado:
 
 <img src="doc/Accept.png" alt="headers"/>
 
 Se puede manejar de diferentes formas:
-- **Mediante cabecera**: Accept=application/json
-- **Mediante queryParam**: ?accept=json
+- **Mediante cabecera**: Accept=application/json ó Accept-languague=ES_es
+- **Mediante queryParam**: ?accept=json ó ?accept-language=ES_es
 
 <img src="doc/contentNegotiation.png" alt="Content Negotiation"/>
 
@@ -351,3 +351,5 @@ La metodología se implementa en 3 fases:
 - [Spring JPA pagination](https://www.baeldung.com/spring-data-jpa-pagination-sorting)
 - [Swagger annotations](https://www.baeldung.com/spring-rest-openapi-documentation)
 - [API first](https://cloudappi.net/metodologia-api-first/)
+- [API design interview questions](https://blog.postman.com/api-design-interview-questions/)
+- [API documentation](https://apichangelog.substack.com/p/five-elements-of-good-api-documentation)

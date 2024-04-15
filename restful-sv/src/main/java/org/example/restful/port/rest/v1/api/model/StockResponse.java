@@ -2,12 +2,16 @@ package org.example.restful.port.rest.v1.api.model;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
+@JsonInclude(Include.NON_EMPTY)
 public class StockResponse extends RepresentationModel<StockResponse> {
   @Schema(description = "International Securities Identification Number", example = "ES0105611000")
   private String isin;

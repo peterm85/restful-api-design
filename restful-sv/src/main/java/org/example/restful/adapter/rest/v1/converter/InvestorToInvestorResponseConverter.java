@@ -14,6 +14,7 @@ public class InvestorToInvestorResponseConverter implements Converter<Investor, 
       return null;
     } else {
       return InvestorResponse.builder()
+          .id(domain.getId())
           .idNumber(domain.getIdNumber())
           .name(domain.getName())
           .age(domain.getAge())

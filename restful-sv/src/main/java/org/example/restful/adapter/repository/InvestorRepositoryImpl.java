@@ -44,7 +44,7 @@ public class InvestorRepositoryImpl implements InvestorRepository {
       return entityConverter.convert(savedInvestor);
     } catch (DataIntegrityViolationException e) {
       throw new InvestorException(
-          String.format("Investor {} already exists", investor.getIdNumber()));
+          String.format("Investor '%s' already exists", investor.getIdNumber()));
     }
   }
 

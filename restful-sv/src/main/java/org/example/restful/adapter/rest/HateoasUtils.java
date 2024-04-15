@@ -25,7 +25,9 @@ public abstract class HateoasUtils<T extends RepresentationModel<T>> {
 
   protected void applyHATEOAS(T response, Map<RequestMethod, WebMvcLinkBuilder> hateoasMap) {
 
-    hateoasMap.entrySet().forEach(m -> response.add(m.getValue().withRel(m.getKey().name())));
+    hateoasMap
+        .entrySet()
+        .forEach(m -> response.add(m.getValue().withRel(m.getKey().name().toLowerCase())));
   }
 
   protected PageRequest getPageable(final Optional<Long> offset, final Optional<Integer> limit) {
@@ -40,7 +42,7 @@ public abstract class HateoasUtils<T extends RepresentationModel<T>> {
         .limit(limit)
         .offset(offset)
         .total(total)
-        .links(
+        ._links(
             Links.builder()
                 .first(
                     ServletUriComponentsBuilder.fromCurrentRequest()

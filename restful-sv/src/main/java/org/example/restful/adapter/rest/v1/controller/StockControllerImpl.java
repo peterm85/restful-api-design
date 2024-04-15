@@ -83,6 +83,7 @@ public class StockControllerImpl extends HateoasUtils<StockResponse> implements 
   public ResponseEntity<StockResponse> createStock(
       @Valid @RequestBody final StockRequest stockRequest) {
     log.info("Creating stock {}", stockRequest.getIsin());
+
     final Stock stock = stockService.createStock(requestConverter.convert(stockRequest));
 
     final StockResponse response = responseConverter.convert(stock);

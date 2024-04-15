@@ -3,6 +3,7 @@ package org.example.restful.configuration;
 import org.example.restful.exception.InvestorException;
 import org.example.restful.exception.InvestorNotFoundException;
 import org.example.restful.exception.JsonPatchFormatException;
+import org.example.restful.exception.StockException;
 import org.example.restful.exception.StockNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,19 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
   public final Error handleInvestorExceptions(final Exception ex, final WebRequest request) {
+    log.error(
+        "Response to {} with status {} and body {}",
+        request,
+        HttpStatus.BAD_REQUEST,
+        ex.getMessage());
+
+    return new Error("ERR400", ex.getMessage());
+  }
+
+  @ExceptionHandler({StockException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public final Error handleStockExceptions(final Exception ex, final WebRequest request) {
     log.error(
         "Response to {} with status {} and body {}",
         request,

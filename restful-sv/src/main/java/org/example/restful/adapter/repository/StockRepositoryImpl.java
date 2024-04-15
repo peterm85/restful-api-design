@@ -41,7 +41,7 @@ public class StockRepositoryImpl implements StockRepository {
 
       return entityConverter.convert(newEntity);
     } catch (DataIntegrityViolationException e) {
-      throw new StockException(String.format("Stock {} already exists", stock.getIsin()));
+      throw new StockException(String.format("Stock '%s' already exists", stock.getIsin()));
     }
   }
 }

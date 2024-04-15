@@ -13,5 +13,5 @@ public class PaginationLinks {
 
   private Long total;
 
-  private Links links;
+  private Links _links;
 }
