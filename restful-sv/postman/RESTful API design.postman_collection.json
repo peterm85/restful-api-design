@@ -24,7 +24,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor/76245691H",
+					"raw": "http://localhost:8080/api/v1/invest/investor/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -35,7 +35,75 @@
 						"v1",
 						"invest",
 						"investor",
-						"76245691H"
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all investors",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept-encoding": true,
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/invest/investor",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"invest",
+						"investor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all investors V2",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept-encoding": true,
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v2/invest/investor",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v2",
+						"invest",
+						"investor"
 					]
 				}
 			},
@@ -79,7 +147,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"idNumber\": \"76245691H\",\r\n  \"name\": \"Manuel Rodriguez\",\r\n  \"age\": 41,\r\n  \"country\": \"SPAIN\"\r\n}",
+					"raw": "{\r\n  \"idNumber\": \"76245691H\",\r\n  \"name\": \"Manuel Rodriguez\",\r\n  \"age\": 42,\r\n  \"country\": \"SPAIN\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -87,7 +155,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor",
+					"raw": "http://localhost:8080/api/v1/invest/investor/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -97,7 +165,8 @@
 						"api",
 						"v1",
 						"invest",
-						"investor"
+						"investor",
+						"1"
 					]
 				}
 			},
@@ -118,7 +187,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor",
+					"raw": "http://localhost:8080/api/v1/invest/investor/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -128,7 +197,8 @@
 						"api",
 						"v1",
 						"invest",
-						"investor"
+						"investor",
+						"1"
 					]
 				}
 			},
@@ -252,7 +322,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor/76245691H/purchase",
+					"raw": "http://localhost:8080/api/v1/invest/investor/1/purchase",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -263,7 +333,7 @@
 						"v1",
 						"invest",
 						"investor",
-						"76245691H",
+						"1",
 						"purchase"
 					]
 				}
