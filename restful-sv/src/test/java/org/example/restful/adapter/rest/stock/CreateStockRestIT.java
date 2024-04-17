@@ -54,7 +54,8 @@ public class CreateStockRestIT {
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.isin", is("ES0105611000")))
         .andExpect(jsonPath("$.corporationName", is("Singular People")))
-        .andExpect(jsonPath("$._links", hasKey("GET")));
+        .andExpect(jsonPath("$._links", hasKey("get")))
+        .andExpect(jsonPath("$._links", hasKey("patch")));
   }
 
   @Test

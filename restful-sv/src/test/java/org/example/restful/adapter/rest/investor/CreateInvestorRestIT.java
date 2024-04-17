@@ -54,9 +54,9 @@ public class CreateInvestorRestIT {
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.idNumber", is("11222333X")))
         .andExpect(jsonPath("$.name", is("Olga Carmona")))
-        .andExpect(jsonPath("$._links", hasKey("GET")))
-        .andExpect(jsonPath("$._links", hasKey("PUT")))
-        .andExpect(jsonPath("$._links", hasKey("DELETE")));
+        .andExpect(jsonPath("$._links", hasKey("get")))
+        .andExpect(jsonPath("$._links", hasKey("put")))
+        .andExpect(jsonPath("$._links", hasKey("delete")));
   }
 
   @Test
