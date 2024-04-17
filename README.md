@@ -6,22 +6,28 @@ En este apartado se pretende recoger, de manera resumida, los diferentes tipos d
 
 ## <a name="index">Índice:</a>
  - [¿Qué es una API vs API REST vs API RESTful?](#what-is)
- - [Buenas prácticas](#good-practices)
-
+ - [Buenas prácticas](#best-practices)
+     + Nomenclatura consistente
+     + Eficiencia
+     + Seguridad
+     + Versionado
+     + Manejo de errores
+     + Documentación
+ - [API first](#api-first)
+ - [Bibliografía](#bibliography)
 
 
 ## <a name="what-is">¿Qué es una API vs REST vs API RESTful?</a> [&#8593;](#index) 
 
-Una [API](https://es.wikipedia.org/wiki/API) es un contrato donde se define una serie de procedimientos que permite que varios sistemas se comuniquen entre sí y compartan información.
+Una [API](https://es.wikipedia.org/wiki/API) es un conjunto de reglas y protocolos que permite a diferentes sistemas de software comunicarse entre sí y que compartan información y funcionalidades.
 
 - Orientado a máquinas, no a usuarios
-- No sigue unas normas
 - No está atado a un lenguaje de programación
-- Permite desacoplar y reutilizar sistemas
+- Permite desacoplar, escalar y reutilizar sistemas
 
-Existen diferentes tipos de APIs:
+Existen muchos tipos de APIs. Algunas de las más utilizadas pueden ser:
 
-<img src="doc/APIs.png" alt="APIs"/>
+![APIs|100](doc/APIs.png)
 
 
 [REST](https://es.wikipedia.org/wiki/Transferencia_de_Estado_Representacional) es un estilo de arquitectura software para servicios web con las siguientes restricciones:
@@ -33,35 +39,31 @@ Existen diferentes tipos de APIs:
   + Manipulación: uso de formatos JSON, XML, HTML, …
   + Mensajes autodescriptivos: nombre del recurso, métodos HTTP y metadatos
   + Hipervínculos: HATEOAS, representa cómo cambiar el estado de un recurso
-- Cacheable, permite una mejor performance
+- Cacheable, permite una mejor eficiencia
 
 
-La palabra RESTful describe a aquellas APIs o servicios que se adhieren a los principios REST. Para ello una API RESTful debe seguir las reglas y buenas prácticas definidas por REST.
+La palabra RESTful describe a aquellas APIs o servicios que se adhieren a los principios REST. Para ello una API RESTful debe seguir las reglas definidas por REST.
 
 Sólo con las restricciones vistas en el punto anterior aún queda todo bastante abierto a la interpretación de cada desarrollador. Por ello, aunque no hay un estándar claro aceptado por la comunidad, sí se hace necesario detallar unas buenas prácticas que ayuden a obtener APIs RESTful de calidad.
 
 Para ello tendremos en cuenta los siguientes objetivos:
-- Hacerla sencilla y fácil de usar para los desarrolladores. La calidad de una API es directamente proporcional a la facilidad de su integración.
+- Hacerla fácil de usar para los desarrolladores. La calidad de una API es directamente proporcional a la facilidad de su integración.
 - Utilizar patrones, terminología estándar y desarrollar comportamientos homogéneos
 - Manejar los errores de manera clara e intuitiva
 - Proveer documentación
 
 
-## <a name="good-practices">Buenas prácticas</a> [&#8593;](#index) 
+## <a name="best-practices">Buenas prácticas</a> [&#8593;](#index) 
 
-### URI's para representar recursos
+### Nomenclatura consistente
+
+##### URI's para representar recursos
 
 Las URI's son la puerta de entrada para una API REST, por lo que es importante que tengan la estructura correcta.
 
 > *scheme://authority/path[?query]*
 
-Ejemplos:
-
-*https://developers.google.com/identity/protocols/oauth2/web-server?hl=es-419*
-
-ó
-
-<img src="doc/URI.png" alt="URI"/>
+![URI|100](doc/URI.png)
 
 Recomendaciones generales:
 - Claridad: Deben definir de forma clara y sencilla la representación del recurso
@@ -70,7 +72,7 @@ Recomendaciones generales:
 - Seguridad: Nunca enviar información sensible en los parámetros, independientemente de si se usa HTTPS
 
 
-#### Modelado de recursos
+##### Modelado de recursos
 
 Un recurso es un conjunto de datos que vamos a servir desde nuestra API RESTful.
 
@@ -92,7 +94,7 @@ ACTIONS
 <img src="doc/ACTIONS.png" alt="swagger ACTIONS"/>
 
 
-### Negociación del contenido
+##### Negociación del contenido
 
 Ofrece la posibilidad de que un cliente pueda solicitar la información de un recurso bajo un formato o idioma determinado:
 
@@ -109,7 +111,9 @@ En caso de que el formato no sea soportado se recomienda informar debidamente al
 <img src="doc/contentNegotiation_notAcceptable.png" alt="Content Negotiation - Not Acceptable"/>
 
 
-### Paginación
+### Eficiencia
+
+##### Paginación
 
 Estrategia diseñada para devolver un subconjunto de datos de un recurso en lugar de su totalidad. Por tanto se consideraría una representación de recursos, no un recurso en sí.
 
@@ -128,51 +132,7 @@ Existen diferentes formas de implementar la paginación:
 <img src="doc/URI_query.png" alt="URI query"/>
 
 
-### Descubrimiento
-
-También conocido como HATEOAS (Hypermedia As The Engine Of Application State). Provee un listado de URL’s con las operaciones que se permiten realizar sobre el recurso.
-
-Por ejemplo, como respuesta a una operación de creación POST, la respuesta podría devolver la siguiente estructura:
-
-<img src="doc/HATEOAS.png" alt="HATEOAS"/>
-
-Del mismo modo también sería de utilidad limitar aquellos métodos HTTP que no están permitidos (*405 - Method Not Allowed*) para informar al cliente sobre qué operaciones puede y no puede realizar en el recurso.
-
-<img src="doc/notAllowedMethod.png" alt="Method Not Allowed"/>
-
-
-### Errores y logs de excepciones
-
-Es recomendable asociar correctamente el código de error HTTP devuelto con el mensaje mostrado, con el objetivo de evitar malentendidos y ser más transparente de cara al usuario.
-Para ello es una práctica común generar excepciones personalizadas que nos permitan identificar correctamente el momento y la causa del error.
-
-<img src="doc/exception.png" alt="Exception"/>
-
->[CustomControllerAdvice.java](restful-sv/src/main/java/org/example/restful/configuration/CustomControllerAdvice.java)
-
-```
-  @ExceptionHandler({InvestorNotFoundException.class, StockNotFoundException.class})
-  @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ResponseBody
-  public final Error handleNotFoundExceptions(final Exception ex, final WebRequest request) {
-    log.error(
-        "Response to {} with status {} and body {}",
-        request,
-        HttpStatus.NOT_FOUND,
-        ex.getMessage());
-
-    return new Error("ERR404", ex.getMessage());
-  }
-```
-
-Sin embargo, por motivos de seguridad, no deberíamos mostrar información sensible demasiado detallada en estos mensajes por las siguientes razones:
-- En caso de una brecha de seguridad, un atacante podría explotar la información obtenida en estas respuestas, ya sean trazas, identificadores, etc.
-- Normalmente estos mensajes pueden ser almacenados en ficheros de logs en claro, dejando los datos expuestos para ser explotados más tarde.
-
-La clave está en el equilibrio.
-
-
-### Caché
+#### Caché
 
 La caché es la capacidad de almacenar copias de datos a los que se accede con frecuencia en varios lugares a lo largo de la ruta solicitud-respuesta. 
 
@@ -207,22 +167,40 @@ Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se 
 ```
 
 
-## <a name="advanced-patterns">Patrones avanzados</a> [&#8593;](#index)
+#### Operaciones asíncronas
 
-### Versionado
+Una operación 'bulk' se diferencia de una operación 'batch' en que la primera es una operación única con múltiples objetos y la segunda son múltiples operaciones con múltiples objetos.
 
-Es muy dificil afirmar que una API va a mantenerse intacta a lo largo de su vida sin necesidad de ningún cambio. En el caso de cambios menores, corrección de errores, etc. no sería necesario un versionado del mismo. Sin embargo, para cambios importantes o que pudieran resultar incompatibles con el funcionamiento de la versión anterior se recomienda anotar con versiones cada uno de los comportamientos.
+Pongamos varios ejemplos:
 
-A continuación veremos diferentes formas de versionar una API:
+- Bulk: registrar varias acciones a un inversor
+- Batch: registrar varias acciones a varios inversores (por ejemplo en el caso de que el valor de las acciones baje de precio)
 
-- Mediante URI path: *http://localhost/v2/resource*
-- Mediante query parameter: *?version=2.0*
-- Mediante custom headers: *x-resource-version=2.0*
-- Mediante content-negociation: *Accept=application/resource-v2.0+json*
+Para ello es posible utilizar el método PATCH del recurso de manera que el body provea el listado de objetos a incorporar.
 
-<img src="doc/versioning.png" alt="URI path versioning"/>
+Este tipo de operaciones pueden conllevar una baja performance por lo que podría ser necesario resolverlos de forma asíncrona (devolviendo *202 - Accepted*) o mediante la implementación de flujos en paralelo para una respuesta más rápida.
 
-Quedará en manos del negocio la decisión de durante cuanto tiempo se deberán mantener versiones antiguas de un *endPoint* y el momento oportuno para darlo totalmente de baja.
+
+#### Idempotencia
+
+La idempotencia es una característica basada en que ante una misma petición, la respuesta debería ser idéntica. Este patrón viene a solucionar sobre todo ciertos problemas de concurrencia o de peticiones repetidas. Por defecto los métodos GET, PUT y DELETE son considerados idempotentes, al contrario que los métodos POST y PATCH. 
+
+En la mayoría de casos podría ser suficiente con adaptar algunos endpoints de manera que siempre devuelvan la misma respuesta. Un [ejemplo](restful-sv/src/main/java/org/example/restful/service/InvestorService.java) podría ser una petición DELETE que elimine un inversor: si el inversor existe lo elimina y si ya fue eliminado anteriormente no hace nada. De este modo el cliente no tendrá que preocuparse en caso de recibir un error por inversor no encontrado ya que no le aporta ningún valor.
+
+En caso de que sea necesario puede hacerse uso de la cabecera ETag para validar si el resultado sigue siendo el mismo. De lo contrario se recomendaría notificar al cliente mediante un error HTTP *409 - Conflict*
+
+
+#### BTF (Backend to Frontend)
+
+Existe una problemática específica para las aplicaciones multiplataforma: aquellas que tienen una web y una app movil ligera. En estos casos, por ejemplo, la app podría necesitar menos información y una mejor performance que la que pudiera resolver la web. Por ello se propone la implementación de interfaces especializadas para cada uno de los clientes (*/api/web/resource* vs */api/app/resource*). Esto puede resultar controvertido dadas las ventajas e inconvenientes que conlleva:
+
+**Ventajas:**
+- Permite tener una representación de los recursos más reducida para aquellos clientes que no necesiten tanta información 
+- Podríamos mejorar la performance para estos clientes que necesitaran una respuesta mucho más rápida
+
+**Inconvenientes:**
+- Sería necesario mantener ambas interfaces con un comportamiento muy similar
+
 
 ### Seguridad
 
@@ -256,7 +234,24 @@ Un aspecto importante en las APIs RESTful es la seguridad. A continuación enumer
   }
 ```
 
-### Redirecciones
+
+### Versionado
+
+Es muy dificil afirmar que una API va a mantenerse intacta a lo largo de su vida sin necesidad de ningún cambio. En el caso de cambios menores, corrección de errores, etc. no sería necesario un versionado del mismo. Sin embargo, para cambios importantes o que pudieran resultar incompatibles con el funcionamiento de la versión anterior se recomienda anotar con versiones cada uno de los comportamientos.
+
+A continuación veremos diferentes formas de versionar una API:
+
+- Mediante URI path: *http://localhost/v2/resource*
+- Mediante query parameter: *?version=2.0*
+- Mediante custom headers: *x-resource-version=2.0*
+- Mediante content-negociation: *Accept=application/resource-v2.0+json*
+
+<img src="doc/versioning.png" alt="URI path versioning"/>
+
+Quedará en manos del negocio la decisión de durante cuanto tiempo se deberán mantener versiones antiguas de un *endPoint* y el momento oportuno para darlo totalmente de baja.
+
+
+##### Redirecciones
 
 Aquellos endpoints que quedaran obsoletos o temporalmente inutilizables deberían comunicar correctamente esta situación y, en caso de que sea posible, proveer una alternativa al cliente. De este modo podríamos devolver un error HTTP *301 - Permanent redirect* o *307 - Temporary redirect* e incluir la cabecera *location* con la url alternativa.
 
@@ -285,39 +280,53 @@ Este patrón permite al cliente poder recuperarse y finalizar la operación de for
 <img src="doc/redirectSwagger.png" alt="Redirect swagger"/>
 
 
-### Idempotencia
+### Manejo de errores
 
-La idempotencia es una característica basada en que ante una misma petición, la respuesta debería ser idéntica. Este patrón viene a solucionar sobre todo ciertos problemas de concurrencia o de peticiones repetidas. Por defecto los métodos GET, PUT y DELETE son considerados idempotentes, al contrario que los métodos POST y PATCH. 
+Es recomendable asociar correctamente el código de error HTTP devuelto con el mensaje mostrado, con el objetivo de evitar malentendidos y ser más transparente de cara al usuario.
+Para ello es una práctica común generar excepciones personalizadas que nos permitan identificar correctamente el momento y la causa del error.
 
-En la mayoría de casos podría ser suficiente con adaptar algunos endpoints de manera que siempre devuelvan la misma respuesta. Un [ejemplo](restful-sv/src/main/java/org/example/restful/service/InvestorService.java) podría ser una petición DELETE que elimine un inversor: si el inversor existe lo elimina y si ya fue eliminado anteriormente no hace nada. De este modo el cliente no tendrá que preocuparse en caso de recibir un error por inversor no encontrado ya que no le aporta ningún valor.
+<img src="doc/exception.png" alt="Exception"/>
 
-En caso de que sea necesario puede hacerse uso de la cabecera ETag para validar si el resultado sigue siendo el mismo. De lo contrario se recomendaría notificar al cliente mediante un error HTTP *409 - Conflict*
+>[CustomControllerAdvice.java](restful-sv/src/main/java/org/example/restful/configuration/CustomControllerAdvice.java)
+
+```
+  @ExceptionHandler({InvestorNotFoundException.class, StockNotFoundException.class})
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ResponseBody
+  public final Error handleNotFoundExceptions(final Exception ex, final WebRequest request) {
+    log.error(
+        "Response to {} with status {} and body {}",
+        request,
+        HttpStatus.NOT_FOUND,
+        ex.getMessage());
+
+    return new Error("ERR404", ex.getMessage());
+  }
+```
+
+Sin embargo, por motivos de seguridad, no deberíamos mostrar información sensible demasiado detallada en estos mensajes por las siguientes razones:
+- En caso de una brecha de seguridad, un atacante podría explotar la información obtenida en estas respuestas, ya sean trazas, identificadores, etc.
+- Normalmente estos mensajes pueden ser almacenados en ficheros de logs en claro, dejando los datos expuestos para ser explotados más tarde.
+
+La clave está en el equilibrio.
 
 
-### Operaciones bulk
+### Documentación
 
-Una operación 'bulk' se diferencia de una operación 'batch' en que la primera es una operación única con múltiples objetos y la segunda son múltiples operaciones con múltiples objetos.
-
-Pongamos varios ejemplos:
-
-- Bulk: registrar varias acciones a un inversor
-- Batch: registrar varias acciones a varios inversores (por ejemplo en el caso de que el valor de las acciones baje de precio)
-
-Para ello es posible utilizar el método PATCH del recurso de manera que el body provea el listado de objetos a incorporar.
-
-Este tipo de operaciones pueden conllevar una baja performance por lo que podría ser necesario resolverlos de forma asíncrona (devolviendo *202 - Accepted*) o mediante la implementación de flujos en paralelo para una respuesta más rápida.
+##### Swagger
 
 
-### BTF (Backend to Frontend)
+##### Descubrimiento
 
-Existe una problemática específica para las aplicaciones multiplataforma: aquellas que tienen una web y una app movil ligera. En estos casos, por ejemplo, la app podría necesitar menos información y una mejor performance que la que pudiera resolver la web. Por ello se propone la implementación de interfaces especializadas para cada uno de los clientes (*/api/web/resource* vs */api/app/resource*). Esto puede resultar controvertido dadas las ventajas e inconvenientes que conlleva:
+También conocido como HATEOAS (Hypermedia As The Engine Of Application State). Provee un listado de URL’s con las operaciones que se permiten realizar sobre el recurso.
 
-**Ventajas:**
-- Permite tener una representación de los recursos más reducida para aquellos clientes que no necesiten tanta información 
-- Podríamos mejorar la performance para estos clientes que necesitaran una respuesta mucho más rápida
+Por ejemplo, como respuesta a una operación de creación POST, la respuesta podría devolver la siguiente estructura:
 
-**Inconvenientes:**
-- Sería necesario mantener ambas interfaces con un comportamiento muy similar
+<img src="doc/HATEOAS.png" alt="HATEOAS"/>
+
+Del mismo modo también sería de utilidad limitar aquellos métodos HTTP que no están permitidos (*405 - Method Not Allowed*) para informar al cliente sobre qué operaciones puede y no puede realizar en el recurso.
+
+<img src="doc/notAllowedMethod.png" alt="Method Not Allowed"/>
 
 
 ## <a name="api-first">API first</a> [&#8593;](#index)
@@ -341,7 +350,8 @@ La metodología se implementa en 3 fases:
   * Consumo de la API: Las apis se exponen a traves de las herramientas de api management apuntando al mock server, lo que le permite a los consumidores empezar a probar y desarrollar la funcionalidad y mejorar el contrato api conjuntamente con el desarrollador de la API.
 - Fase de integración: Una vez implementada la API debemos reapuntar la API del mockserver a la implementación realizada. 
 
-## Bibliografía
+
+## <a name="bibliography">Bibliografía</a> [&#8593;](#index)
 
 - [https://restfulapi.net/](https://restfulapi.net/)
 - [Representational state transfer](https://en.wikipedia.org/wiki/Representational_state_transfer)
