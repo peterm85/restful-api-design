@@ -1,6 +1,7 @@
 package org.example.restful.adapter.rest.trading;
 
 import org.example.restful.port.rest.v1.api.model.OrderTypeRequest;
+import org.example.restful.port.rest.v1.api.model.PurchaseBatchRequest;
 import org.example.restful.port.rest.v1.api.model.PurchaseRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,10 +20,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 import static org.example.restful.adapter.rest.v1.controller.TradingControllerImpl.PATH;
 import static org.example.restful.adapter.rest.v1.controller.TradingControllerImpl.PURCHASE_OPERATION;
 import static org.example.restful.adapter.rest.v1.controller.TradingControllerImpl.SLASH;
 import static org.example.restful.adapter.rest.v1.controller.TradingControllerImpl.SUBPATH;
+import static org.example.restful.constant.Roles.ADMIN;
 import static org.example.restful.constant.Roles.USER;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -145,6 +149,45 @@ public class PurchaseSharesRestIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @WithMockUser(roles = ADMIN)
+  @SqlGroup({
+    @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
+    @Sql(
+        value = "classpath:init/data-stock.sql",
+        config = @SqlConfig(encoding = "utf-8"),
+        executionPhase = BEFORE_TEST_METHOD),
+    @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
+  })
+  public void whenBatchPurchaseShares_thenStatus202() throws Exception {
+    // given
+    final String isin = "ES0105611000";
+
+    final PurchaseBatchRequest request =
+        PurchaseBatchRequest.builder()
+            .investorId(1L)
+            .isin(isin)
+            .amount(150)
+            .limitedPrize(Double.valueOf("3.45"))
+            .orderType(OrderTypeRequest.DAILY)
+            .build();
+    final PurchaseBatchRequest request2 =
+        PurchaseBatchRequest.builder()
+            .investorId(2L)
+            .isin(isin)
+            .amount(50)
+            .limitedPrize(Double.valueOf("3.45"))
+            .orderType(OrderTypeRequest.DAILY)
+            .build();
+
+    // when then
+    mvc.perform(
+            post(PATH + SUBPATH + SLASH + PURCHASE_OPERATION)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(List.of(request, request2))))
+        .andExpect(status().isAccepted());
   }
 
   private static String asJson(Object obj) throws JsonProcessingException {
