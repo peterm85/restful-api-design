@@ -9,6 +9,8 @@ import org.example.restful.port.rest.v1.api.model.InvestorRequest;
 import org.example.restful.port.rest.v1.api.model.InvestorResponse;
 import org.example.restful.service.InvestorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,6 +33,8 @@ import java.util.Map;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
+import lombok.extern.slf4j.Slf4j;
+
 import static org.example.restful.constant.Roles.ADMIN;
 import static org.example.restful.constant.Roles.USER;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -39,6 +43,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+@Slf4j
 @RestController
 @RequestMapping(InvestorControllerImpl.PATH)
 public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
@@ -57,10 +62,12 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
 
   @Override
   @RolesAllowed({USER, ADMIN})
+  @Cacheable(value = "investor")
   @GetMapping(
       value = SUBPATH + ID_PATH_PARAM,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   public ResponseEntity<InvestorResponse> getInvestor(@PathVariable final Long id) {
+    log.info("Getting investor {}", id);
 
     final InvestorResponse response =
         responseConverter.convert(investorService.getInvestorById(id));
@@ -75,7 +82,7 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
   @RolesAllowed(ADMIN)
   @GetMapping(value = SUBPATH)
   public ResponseEntity<List<InvestorResponse>> getAllInvestors() {
-
+    log.info("Getting all investors");
     return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
         .location(
             UriComponentsBuilder.newInstance()
@@ -94,6 +101,7 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InvestorResponse> createInvestor(
       @Valid @RequestBody final InvestorRequest investorRequest) throws Exception {
+    log.info("Creating investor {}", investorRequest.getIdNumber());
 
     final Investor investor =
         investorService.createInvestor(requestConverter.convert(investorRequest));
@@ -108,9 +116,11 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
   @SuppressWarnings("rawtypes")
   @Override
   @RolesAllowed({USER, ADMIN})
+  @CacheEvict(value = "investor", key = "#id")
   @PutMapping(value = SUBPATH + ID_PATH_PARAM, consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity updateInvestor(
       @PathVariable final Long id, @RequestBody final InvestorRequest investorRequest) {
+    log.info("Updating investor {}", id);
 
     investorService.updateInvestor(id, requestConverter.convert(investorRequest));
 
@@ -120,8 +130,10 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
   @SuppressWarnings("rawtypes")
   @Override
   @RolesAllowed({USER, ADMIN})
+  @CacheEvict(value = "investor", key = "#id")
   @DeleteMapping(value = SUBPATH + ID_PATH_PARAM, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity deleteInvestor(@PathVariable final Long id) {
+    log.info("Deleting investor {}", id);
 
     investorService.deleteInvestor(id);
 
