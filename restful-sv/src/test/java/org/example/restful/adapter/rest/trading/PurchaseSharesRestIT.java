@@ -184,7 +184,7 @@ public class PurchaseSharesRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH + SLASH + PURCHASE_OPERATION)
+            post(PATH + PURCHASE_OPERATION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(List.of(request, request2))))
         .andExpect(status().isAccepted());

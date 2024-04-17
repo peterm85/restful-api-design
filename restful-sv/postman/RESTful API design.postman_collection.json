@@ -339,6 +339,37 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Buy batch shares",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"investorId\": 1,\r\n    \"isin\": \"ES0105611000\",\r\n    \"amount\": 150,\r\n    \"limitedPrize\": 3.56,\r\n    \"orderType\": \"PERMANENT\"\r\n  },\r\n  {\r\n    \"investorId\": 2,\r\n    \"isin\": \"ES0105611000\",\r\n    \"amount\": 50,\r\n    \"limitedPrize\": 3.48,\r\n    \"orderType\": \"PERMANENT\"\r\n  }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/invest/purchase",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"invest",
+						"purchase"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {

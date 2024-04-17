@@ -39,7 +39,7 @@ public class TradingControllerImpl implements TradingController {
   public static final String PURCHASE_OPERATION = SLASH + "purchase";
   private static final String PURCHASE_OPERATION_PATH =
       SUBPATH + ID_PATH_PARAM + PURCHASE_OPERATION;
-  private static final String PURCHASE_BATCH_OPERATION_PATH = SUBPATH + PURCHASE_OPERATION;
+  private static final String PURCHASE_BATCH_OPERATION_PATH = PURCHASE_OPERATION;
 
   @Autowired private TradingService tradingService;
 
