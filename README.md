@@ -27,7 +27,7 @@ Una [API](https://es.wikipedia.org/wiki/API) es un conjunto de reglas y protocol
 
 Existen muchos tipos de APIs. Algunas de las más utilizadas pueden ser:
 
-![APIs|100](doc/APIs.png)
+![APIs](doc/APIs.png)
 
 
 [REST](https://es.wikipedia.org/wiki/Transferencia_de_Estado_Representacional) es un estilo de arquitectura software para servicios web con las siguientes restricciones:
@@ -61,7 +61,7 @@ Para ello tendremos en cuenta los siguientes objetivos:
 
 Las URI's son la puerta de entrada para una API REST, por lo que es importante que tengan la estructura correcta.
 
-![URI|100](doc/URI.png)
+![URI](doc/URI.png)
 
 Recomendaciones generales:
 - Claridad: Deben definir de forma clara y sencilla la representación del recurso.
@@ -85,27 +85,25 @@ Veamos algunos ejemplos:
 
 **CRUD** (Create, Read, Update y Delete)
 
-![CRUD|100](doc/CRUD.png)
+![CRUD](doc/CRUD.png)
 
 **ACTIONS**
 
-![ACTIONS|100](doc/ACTIONS.png)
+![ACTIONS](doc/ACTIONS.png)
 
 
 ##### Negociación del contenido
 
 Ofrece la posibilidad de que un cliente pueda solicitar la información de un recurso bajo un formato o idioma determinado:
 
-
 Se puede manejar de diferentes formas:
-- **Mediante cabecera**: Accept=application/json ó Accept-languague=ES_es
-- **Mediante queryParam**: ?accept=json ó ?accept-language=ES_es
+- **Mediante cabeceras**: Accept=application/json ó Accept-language=ES_es
+- **Mediante url**: http://enterprise.com/api/hrservice/v1/employees/20423.json
+- **Mediante queryParams**: ?accept=json ó ?accept-language=ES_es
 
-<img src="doc/contentNegotiation.png" alt="Content Negotiation"/>
+![Content Negotiation](doc/contentNegotiation.png)
 
 En caso de que el formato no sea soportado se recomienda informar debidamente al cliente, por ejemplo devolviendo un error con código *406 - Not Acceptable*.
-
-<img src="doc/contentNegotiation_notAcceptable.png" alt="Content Negotiation - Not Acceptable"/>
 
 
 ### Eficiencia
@@ -126,8 +124,38 @@ Existen diferentes formas de implementar la paginación:
 - **Time based**: utilizando parámetros como *since* y *until*
 - **Offset based**: utilizando parámetros como *offset* y *limit*
 
-<img src="doc/URI_query.png" alt="URI query"/>
+>[InvestorControllerV2Impl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v2/controller/InvestorControllerV2Impl.java)
 
+```
+  @SuppressWarnings("unchecked")
+  @Override
+  @RolesAllowed(ADMIN)
+  @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InvestorResponsePage> getAllInvestors(
+      final Optional<Long> offset, final Optional<Integer> limit) {
+
+    final Pageable pageable = getPageable(offset, limit);
+
+    final Page<Investor> resultPage = investorService.getAllInvestors(pageable);
+
+    return ResponseEntity.status(calculateStatus(resultPage))
+        .body(
+            InvestorResponsePage.builder()
+                .data(resultPage.map(converter::convert).stream().collect(Collectors.toList()))
+                .pagination(
+                    getPagination(
+                        offset.orElse(PAGINATION_DEFAULT_OFFSET),
+                        limit.orElse(PAGINATION_DEFAULT_LIMIT),
+                        resultPage.getTotalElements()))
+                .build());
+  }
+
+  private HttpStatus calculateStatus(final Page<Investor> resultPage) {
+    return resultPage.getTotalElements() > resultPage.getSize()
+        ? HttpStatus.PARTIAL_CONTENT
+        : HttpStatus.OK;
+  }
+```
 
 #### Caché
 
@@ -140,26 +168,44 @@ La optimización de la red mediante el almacenamiento en caché mejora la calidad 
 - Reducir la carga de los servidores
 - Ocultar los fallos de la red
 
-Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se dé una condición especial.
+Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se dé una condición especial o hasta que el recurso sea modificado.
 
-<img src="doc/cache.png" alt="Cache"/>
 
->[StockControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/StockControllerImpl.java)
+>[InvestorControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/InvestorControllerImpl.java)
 
 ```
   @Override
   @RolesAllowed({USER, ADMIN})
   @Cacheable(value = "allstocks")
-  @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<StockResponse>> getAllStocks() {
-    log.info("Getting all stocks");
+  @GetMapping(
+      value = SUBPATH + ID_PATH_PARAM,
+      produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  public ResponseEntity<InvestorResponse> getInvestor(@PathVariable final Long id) {
+  
+    log.info("Getting investor {}", id);
 
-    final List<StockResponse> responses = responseConverter.convert(stockService.getAllStocks());
+    final InvestorResponse response = responseConverter.convert(investorService.getInvestorById(id));
 
     return ResponseEntity.ok()
-        .cacheControl(CacheControl.maxAge(cacheTTL.getAllStocksTTL(), TimeUnit.MILLISECONDS))
         .lastModified(Instant.now())
-        .body(responses);
+        .body(response);
+  }
+  
+  @SuppressWarnings("rawtypes")
+  @Override
+  @RolesAllowed({USER, ADMIN})
+  @CacheEvict(value = "investor", key = "#id")
+  @PutMapping(
+      value = SUBPATH + ID_PATH_PARAM, 
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity updateInvestor(
+      @PathVariable final Long id, @RequestBody final InvestorRequest investorRequest) {
+    
+    log.info("Updating investor {}", id);
+
+    investorService.updateInvestor(id, requestConverter.convert(investorRequest));
+
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 ```
 
@@ -177,6 +223,27 @@ Para ello es posible utilizar el método PATCH del recurso de manera que el body 
 
 Este tipo de operaciones pueden conllevar una baja performance por lo que podría ser necesario resolverlos de forma asíncrona (devolviendo *202 - Accepted*) o mediante la implementación de flujos en paralelo para una respuesta más rápida.
 
+
+>[TradingControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/TradingControllerImpl.java)
+
+```
+  @Override
+  @RolesAllowed(ADMIN)
+  @PostMapping(value = PURCHASE_BATCH_OPERATION_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Void> batchPurchase(
+      @Valid @RequestBody final List<PurchaseBatchRequest> purchaseRequests) {
+
+    supplyAsync(
+        () ->
+            purchaseRequests.stream()
+                .map(
+                    request ->
+                        tradingService.purchase(
+                            request.getInvestorId(), requestBatchConverter.convert(request))));
+
+    return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+  }
+```
 
 #### Idempotencia
 
