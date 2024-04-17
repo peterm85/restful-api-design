@@ -61,15 +61,13 @@ Para ello tendremos en cuenta los siguientes objetivos:
 
 Las URI's son la puerta de entrada para una API REST, por lo que es importante que tengan la estructura correcta.
 
-> *scheme://authority/path[?query]*
-
 ![URI|100](doc/URI.png)
 
 Recomendaciones generales:
-- Claridad: Deben definir de forma clara y sencilla la representación del recurso
-- Legibilidad: Usar sólo minusculas, evitar guiones bajos (‘_’) y puntos (‘.’) y si es necesario, usar (‘-’) en palabras compuestas (kebab-case)
-- Homogeneidad: Recursos en plural, acordar terminología: id, bookId, idBook, ... y no incluir (‘/’) al final de la ruta
-- Seguridad: Nunca enviar información sensible en los parámetros, independientemente de si se usa HTTPS
+- Claridad: Deben definir de forma clara y sencilla la representación del recurso.
+- Legibilidad: Usar sólo minusculas, evitar guiones bajos (‘_’) y puntos (‘.’) y si es necesario, usar (‘-’) en palabras compuestas (kebab-case).
+- Homogeneidad: Recursos en plural, acordar terminología (id, bookId, idBook, ...) y no incluir barra (‘/’) al final de la ruta.
+- Seguridad: Nunca enviar información sensible en los parámetros, independientemente de si se usa HTTPS.
 
 
 ##### Modelado de recursos
@@ -85,20 +83,19 @@ Sobre cada recurso permitiremos realizar diferentes tipos de operaciones:
 
 Veamos algunos ejemplos:
 
-CRUD (Create, Read, Update y Delete)
+**CRUD** (Create, Read, Update y Delete)
 
-<img src="doc/CRUD.png" alt="swagger CRUD"/>
+![CRUD|100](doc/CRUD.png)
 
-ACTIONS
+**ACTIONS**
 
-<img src="doc/ACTIONS.png" alt="swagger ACTIONS"/>
+![ACTIONS|100](doc/ACTIONS.png)
 
 
 ##### Negociación del contenido
 
 Ofrece la posibilidad de que un cliente pueda solicitar la información de un recurso bajo un formato o idioma determinado:
 
-<img src="doc/Accept.png" alt="headers"/>
 
 Se puede manejar de diferentes formas:
 - **Mediante cabecera**: Accept=application/json ó Accept-languague=ES_es
