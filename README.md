@@ -127,9 +127,6 @@ Existen diferentes formas de implementar la paginación:
 >[InvestorControllerV2Impl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v2/controller/InvestorControllerV2Impl.java)
 
 ```
-  @SuppressWarnings("unchecked")
-  @Override
-  @RolesAllowed(ADMIN)
   @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InvestorResponsePage> getAllInvestors(
       final Optional<Long> offset, final Optional<Integer> limit) {
@@ -174,9 +171,7 @@ Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se 
 >[InvestorControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/InvestorControllerImpl.java)
 
 ```
-  @Override
-  @RolesAllowed({USER, ADMIN})
-  @Cacheable(value = "allstocks")
+  @Cacheable(value = "investor")
   @GetMapping(
       value = SUBPATH + ID_PATH_PARAM,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -191,9 +186,6 @@ Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se 
         .body(response);
   }
   
-  @SuppressWarnings("rawtypes")
-  @Override
-  @RolesAllowed({USER, ADMIN})
   @CacheEvict(value = "investor", key = "#id")
   @PutMapping(
       value = SUBPATH + ID_PATH_PARAM, 
@@ -212,23 +204,21 @@ Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se 
 
 #### Operaciones asíncronas
 
-Una operación 'bulk' se diferencia de una operación 'batch' en que la primera es una operación única con múltiples objetos y la segunda son múltiples operaciones con múltiples objetos.
+Una forma de mejorar la eficiencia de nuestra API RESTful es trabajar de forma asíncrona en aquellas operaciones que resulten muy pesadas.
 
 Pongamos varios ejemplos:
 
-- Bulk: registrar varias acciones a un inversor
-- Batch: registrar varias acciones a varios inversores (por ejemplo en el caso de que el valor de las acciones baje de precio)
+- Bulk: registrar varias acciones sobre un recurso
+- Batch: registrar varias acciones sobre varios recursos
 
-Para ello es posible utilizar el método PATCH del recurso de manera que el body provea el listado de objetos a incorporar.
+Para ello es posible utilizar el método PATCH de manera que el payload se provea del listado de operaciones a realizar.
 
-Este tipo de operaciones pueden conllevar una baja performance por lo que podría ser necesario resolverlos de forma asíncrona (devolviendo *202 - Accepted*) o mediante la implementación de flujos en paralelo para una respuesta más rápida.
+En este caso podemos devolver el estado *202 - Accepted* de modo que el usuario pueda consultar más tarde su situación.
 
 
 >[TradingControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/TradingControllerImpl.java)
 
 ```
-  @Override
-  @RolesAllowed(ADMIN)
   @PostMapping(value = PURCHASE_BATCH_OPERATION_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> batchPurchase(
       @Valid @RequestBody final List<PurchaseBatchRequest> purchaseRequests) {
@@ -274,14 +264,13 @@ Un aspecto importante en las APIs RESTful es la seguridad. A continuación enumer
 - Hazlo simple. Cuanto más 'innecesariamente' compleja es una solución, más facil es dejar abierta alguna brecha
 - Siempre usar el protocolo HTTPs para asegurar las conexiones
 - Utiliza contraseñas con hash
-- Nunca exponer información sensible en las URLs tales como usuarios, contraseñas, tokens, etc. tal y como ya comentamos en el apartado [URI query](#uri-query)
+- Nunca exponer información sensible en las URLs tales como usuarios, contraseñas, tokens, etc.
 - Considera el uso de OAuth en lugar de la autenticación básica (aunque ésta sea suficiente)
 - Valida los parámetros de entrada (@Valid)
 
 >[InvestorControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/InvestorControllerImpl.java)
 
 ```
-  @Override
   @RolesAllowed({USER, ADMIN})
   @PostMapping(value = SUBPATH,
                consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -322,7 +311,6 @@ Aquellos endpoints que quedaran obsoletos o temporalmente inutilizables deberían
 >[InvestorControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/InvestorControllerImpl.java)
 
 ```
-  @Override
   @Deprecated
   @RolesAllowed(ADMIN)
   @GetMapping(value = SUBPATH)
