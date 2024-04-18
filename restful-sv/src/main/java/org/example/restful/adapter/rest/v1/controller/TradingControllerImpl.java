@@ -27,7 +27,7 @@ import javax.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static org.example.restful.constant.Roles.ADMIN;
 import static org.example.restful.constant.Roles.USER;
 import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
@@ -70,10 +70,10 @@ public class TradingControllerImpl implements TradingController {
       @Valid @RequestBody final List<PurchaseBatchRequest> purchaseRequests) {
     log.info("Starting batch purchase operation");
 
-    supplyAsync(
+    runAsync(
         () ->
             purchaseRequests.stream()
-                .map(
+                .forEach(
                     request ->
                         tradingService.purchase(
                             request.getInvestorId(), requestBatchConverter.convert(request))));
