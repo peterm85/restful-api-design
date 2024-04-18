@@ -20,7 +20,7 @@ public class TradingService {
 
   @Transactional
   public Operation purchase(final Long id, final Operation operation) {
-    log.info("Buying");
+    log.info("Buying shares from investor {}", id);
 
     operation.setInvestor(investorService.getInvestorById(id));
     operation.setStock(stockService.getStockByIsin(operation.getStock().getIsin()));

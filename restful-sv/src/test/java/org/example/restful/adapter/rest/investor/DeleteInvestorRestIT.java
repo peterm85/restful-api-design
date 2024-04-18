@@ -11,12 +11,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.PATH;
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SLASH;
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SUBPATH;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.INVESTORS_SUBPATH;
+import static org.example.restful.constant.UrlConstants.SLASH;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -30,8 +28,6 @@ public class DeleteInvestorRestIT {
 
   @Autowired private MockMvc mvc;
 
-  private static ObjectMapper mapper = new ObjectMapper();
-
   @Test
   @WithMockUser(roles = USER)
   @SqlGroup({
@@ -43,10 +39,14 @@ public class DeleteInvestorRestIT {
     final Long id = 1L;
 
     // when then
-    mvc.perform(delete(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(
+            delete(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id)
+                .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
 
-    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(
+            get(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id)
+                .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 }

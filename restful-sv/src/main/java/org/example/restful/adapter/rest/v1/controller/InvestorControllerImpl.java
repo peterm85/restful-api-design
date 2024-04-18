@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +30,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
@@ -40,6 +38,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import static org.example.restful.constant.Roles.ADMIN;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V2;
+import static org.example.restful.constant.UrlConstants.ID_PATH_PARAM;
+import static org.example.restful.constant.UrlConstants.INVESTORS_SUBPATH;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
@@ -48,15 +50,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @Slf4j
 @RestController
-@RequestMapping(InvestorControllerImpl.PATH)
+@RequestMapping(BASE_PATH_V1)
 public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
     implements InvestorController {
-
-  public static final String PATH = "/api/v1/invest";
-  public static final String NEW_PATH = "/api/v2/invest";
-  public static final String SLASH = "/";
-  public static final String SUBPATH = SLASH + "investor";
-  private static final String ID_PATH_PARAM = SLASH + "{id}";
 
   @Autowired private InvestorService investorService;
 
@@ -67,7 +63,7 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
   @RolesAllowed({USER, ADMIN})
   @Cacheable(value = "investor")
   @GetMapping(
-      value = SUBPATH + ID_PATH_PARAM,
+      value = INVESTORS_SUBPATH + ID_PATH_PARAM,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   public ResponseEntity<InvestorResponse> getInvestor(@PathVariable final Long id) {
     log.info("Getting investor {}", id);
@@ -77,22 +73,19 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
 
     applyHATEOAS(response, getHateoasMap(response, List.of(PUT, DELETE)));
 
-    return ResponseEntity.ok()
-        .cacheControl(CacheControl.maxAge(cacheTTL.getAllStocksTTL(), TimeUnit.MILLISECONDS))
-        .lastModified(Instant.now())
-        .body(response);
+    return ResponseEntity.ok().lastModified(Instant.now()).body(response);
   }
 
   @Override
   @Deprecated
   @RolesAllowed(ADMIN)
-  @GetMapping(value = SUBPATH)
+  @GetMapping(value = INVESTORS_SUBPATH)
   public ResponseEntity<List<InvestorResponse>> getAllInvestors() {
     log.info("Getting all investors");
     return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
         .location(
             UriComponentsBuilder.newInstance()
-                .path(NEW_PATH.concat(SUBPATH))
+                .path(BASE_PATH_V2.concat(INVESTORS_SUBPATH))
                 .query("offset=" + PAGINATION_DEFAULT_OFFSET + "&limit=" + PAGINATION_DEFAULT_LIMIT)
                 .build()
                 .toUri())
@@ -102,7 +95,7 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
   @Override
   @RolesAllowed({USER, ADMIN})
   @PostMapping(
-      value = SUBPATH,
+      value = INVESTORS_SUBPATH,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InvestorResponse> createInvestor(
@@ -123,7 +116,9 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
   @Override
   @RolesAllowed({USER, ADMIN})
   @CacheEvict(value = "investor", key = "#id")
-  @PutMapping(value = SUBPATH + ID_PATH_PARAM, consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(
+      value = INVESTORS_SUBPATH + ID_PATH_PARAM,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity updateInvestor(
       @PathVariable final Long id, @RequestBody final InvestorRequest investorRequest) {
     log.info("Updating investor {}", id);
@@ -137,7 +132,9 @@ public class InvestorControllerImpl extends HateoasUtils<InvestorResponse>
   @Override
   @RolesAllowed({USER, ADMIN})
   @CacheEvict(value = "investor", key = "#id")
-  @DeleteMapping(value = SUBPATH + ID_PATH_PARAM, produces = MediaType.APPLICATION_JSON_VALUE)
+  @DeleteMapping(
+      value = INVESTORS_SUBPATH + ID_PATH_PARAM,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity deleteInvestor(@PathVariable final Long id) {
     log.info("Deleting investor {}", id);
 

@@ -15,10 +15,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.PATH;
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SLASH;
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SUBPATH;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.INVESTORS_SUBPATH;
+import static org.example.restful.constant.UrlConstants.SLASH;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
@@ -57,12 +57,14 @@ public class UpdateInvestorRestIT {
 
     // when then
     mvc.perform(
-            put(PATH + SUBPATH + SLASH + id)
+            put(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isNoContent());
 
-    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(
+            get(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id)
+                .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.idNumber", is("76245691H")))
@@ -86,7 +88,7 @@ public class UpdateInvestorRestIT {
 
     // when then
     mvc.perform(
-            put(PATH + SUBPATH + SLASH + id)
+            put(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isNotFound());

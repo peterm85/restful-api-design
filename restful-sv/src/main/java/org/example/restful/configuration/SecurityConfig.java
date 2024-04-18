@@ -61,7 +61,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration {
         .authorizeRequests()
         .antMatchers(AUTH_WHITELIST)
         .permitAll()
-        .antMatchers("/**")
+        .anyRequest()
         .authenticated()
         .and()
         .httpBasic();

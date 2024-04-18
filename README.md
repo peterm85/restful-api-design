@@ -329,8 +329,6 @@ Aquellos endpoints que quedaran obsoletos o temporalmente inutilizables deberían
 
 Este patrón permite al cliente poder recuperarse y finalizar la operación de forma satisfactoria. En nuestro caso de ejemplo, la propia interface de Swagger ya se encarga de redireccionar y devolver los resultados desde la url alternativa:
 
-<img src="doc/redirectSwagger.png" alt="Redirect swagger"/>
-
 
 ### Manejo de errores
 

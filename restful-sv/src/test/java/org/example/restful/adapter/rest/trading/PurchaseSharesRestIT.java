@@ -22,15 +22,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
-import static org.example.restful.adapter.rest.v1.controller.TradingControllerImpl.PATH;
-import static org.example.restful.adapter.rest.v1.controller.TradingControllerImpl.PURCHASE_OPERATION;
-import static org.example.restful.adapter.rest.v1.controller.TradingControllerImpl.SLASH;
-import static org.example.restful.adapter.rest.v1.controller.TradingControllerImpl.SUBPATH;
 import static org.example.restful.constant.Roles.ADMIN;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.INVESTORS_SUBPATH;
+import static org.example.restful.constant.UrlConstants.PURCHASE_ACTION;
+import static org.example.restful.constant.UrlConstants.SLASH;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -70,7 +71,7 @@ public class PurchaseSharesRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH + SLASH + id + SLASH + PURCHASE_OPERATION)
+            post(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id + PURCHASE_ACTION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isCreated())
@@ -90,7 +91,7 @@ public class PurchaseSharesRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH + SLASH + id + SLASH + PURCHASE_OPERATION)
+            post(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id + PURCHASE_ACTION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isBadRequest())
@@ -114,7 +115,7 @@ public class PurchaseSharesRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH + SLASH + id + SLASH + PURCHASE_OPERATION)
+            post(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id + PURCHASE_ACTION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isUnauthorized())
@@ -145,7 +146,7 @@ public class PurchaseSharesRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH + SLASH + id + SLASH + PURCHASE_OPERATION)
+            post(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id + PURCHASE_ACTION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isNotFound());
@@ -184,7 +185,7 @@ public class PurchaseSharesRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + PURCHASE_OPERATION)
+            patch(BASE_PATH_V1 + INVESTORS_SUBPATH + PURCHASE_ACTION)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(List.of(request, request2))))
         .andExpect(status().isAccepted());

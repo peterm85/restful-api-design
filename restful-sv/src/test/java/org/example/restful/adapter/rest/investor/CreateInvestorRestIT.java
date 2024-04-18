@@ -14,9 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.PATH;
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SUBPATH;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.INVESTORS_SUBPATH;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasKey;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -49,7 +49,9 @@ public class CreateInvestorRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+            post(BASE_PATH_V1 + INVESTORS_SUBPATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
         .andExpect(status().isCreated())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.idNumber", is("11222333X")))
@@ -74,14 +76,18 @@ public class CreateInvestorRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+            post(BASE_PATH_V1 + INVESTORS_SUBPATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
         .andExpect(status().isCreated())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.idNumber", is("76245691H")))
         .andExpect(jsonPath("$.name", is("Manuel Rodriguez")));
 
     mvc.perform(
-            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+            post(BASE_PATH_V1 + INVESTORS_SUBPATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
         .andExpect(status().isBadRequest())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
   }
@@ -94,7 +100,9 @@ public class CreateInvestorRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+            post(BASE_PATH_V1 + INVESTORS_SUBPATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
         .andExpect(status().isBadRequest())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
   }

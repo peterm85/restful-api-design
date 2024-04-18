@@ -22,15 +22,13 @@ import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
 
 import static org.example.restful.constant.Roles.ADMIN;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V2;
+import static org.example.restful.constant.UrlConstants.INVESTORS_SUBPATH;
 
 @SuppressWarnings("rawtypes")
 @RestController
-@RequestMapping(InvestorControllerV2Impl.PATH)
+@RequestMapping(BASE_PATH_V2)
 public class InvestorControllerV2Impl extends HateoasUtils implements InvestorControllerV2 {
-
-  public static final String PATH = "/api/v2/invest";
-  public static final String SLASH = "/";
-  public static final String SUBPATH = SLASH + "investor";
 
   @Autowired private InvestorService investorService;
 
@@ -39,7 +37,7 @@ public class InvestorControllerV2Impl extends HateoasUtils implements InvestorCo
   @SuppressWarnings("unchecked")
   @Override
   @RolesAllowed(ADMIN)
-  @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = INVESTORS_SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InvestorResponsePage> getAllInvestors(
       final Optional<Long> offset, final Optional<Integer> limit) {
 

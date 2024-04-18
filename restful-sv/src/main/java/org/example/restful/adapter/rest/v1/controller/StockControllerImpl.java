@@ -39,20 +39,18 @@ import lombok.extern.slf4j.Slf4j;
 
 import static org.example.restful.constant.Roles.ADMIN;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.ISIN_PATH_PARAM;
+import static org.example.restful.constant.UrlConstants.STOCKS_SUBPATH;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
 
 @RestController
-@RequestMapping(StockControllerImpl.PATH)
+@RequestMapping(BASE_PATH_V1)
 @Slf4j
 public class StockControllerImpl extends HateoasUtils<StockResponse> implements StockController {
-
-  public static final String PATH = "/api/v1/invest";
-  public static final String SLASH = "/";
-  public static final String SUBPATH = SLASH + "stock";
-  private static final String ID_PATH_PARAM = SLASH + "{isin}";
 
   @Autowired private StockService stockService;
 
@@ -62,7 +60,7 @@ public class StockControllerImpl extends HateoasUtils<StockResponse> implements 
   @Override
   @RolesAllowed({USER, ADMIN})
   @Cacheable(value = "allstocks")
-  @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = STOCKS_SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<StockResponse>> getAllStocks() {
     log.info("Getting all stocks");
 
@@ -77,7 +75,7 @@ public class StockControllerImpl extends HateoasUtils<StockResponse> implements 
   @Override
   @RolesAllowed(ADMIN)
   @PostMapping(
-      value = SUBPATH,
+      value = STOCKS_SUBPATH,
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<StockResponse> createStock(
@@ -96,7 +94,7 @@ public class StockControllerImpl extends HateoasUtils<StockResponse> implements 
   @Override
   @RolesAllowed(ADMIN)
   @PatchMapping(
-      value = SUBPATH + ID_PATH_PARAM,
+      value = STOCKS_SUBPATH + ISIN_PATH_PARAM,
       consumes = "application/json-patch+json",
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<StockResponse> modifyStock(

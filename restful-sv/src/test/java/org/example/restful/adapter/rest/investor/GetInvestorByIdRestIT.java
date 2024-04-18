@@ -11,12 +11,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.PATH;
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SLASH;
-import static org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SUBPATH;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.INVESTORS_SUBPATH;
+import static org.example.restful.constant.UrlConstants.SLASH;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
@@ -32,20 +30,20 @@ public class GetInvestorByIdRestIT {
 
   @Autowired private MockMvc mvc;
 
-  private static ObjectMapper mapper = new ObjectMapper();
-
   @Test
   @WithMockUser(roles = USER)
   @SqlGroup({
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void givenIdNumber_whenGetInvestorById_thenStatus200() throws Exception {
+  public void givenId_whenGetInvestorById_thenStatus200() throws Exception {
     // given
     final Long id = 1L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(
+            get(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id)
+                .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.idNumber", is("76245691H")))
@@ -58,13 +56,13 @@ public class GetInvestorByIdRestIT {
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void givenIdNumberAndXMLAcceptHeader_whenGetInvestorByIdNumber_thenStatus200()
-      throws Exception {
+  public void givenIdAndXMLAcceptHeader_whenGetInvestorById_thenStatus200() throws Exception {
     // given
     final Long id = 1L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + id).accept(MediaType.APPLICATION_XML))
+    mvc.perform(
+            get(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id).accept(MediaType.APPLICATION_XML))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML));
   }
@@ -75,24 +73,26 @@ public class GetInvestorByIdRestIT {
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void givenIdNumberAndPDFAcceptHeader_whenGetInvestorByIdNumber_thenStatus406()
-      throws Exception {
+  public void givenIdAndPDFAcceptHeader_whenGetInvestorById_thenStatus406() throws Exception {
     // given
     final Long id = 1L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + id).accept(MediaType.APPLICATION_PDF))
+    mvc.perform(
+            get(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id).accept(MediaType.APPLICATION_PDF))
         .andExpect(status().isNotAcceptable());
   }
 
   @Test
   @WithMockUser(roles = "INVALID")
-  public void givenInvalidAuthRole_whenGetInvestorByIdNumber_thenStatus401() throws Exception {
+  public void givenInvalidAuthRole_whenGetInvestorById_thenStatus401() throws Exception {
     // given
     final Long id = 1L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(
+            get(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id)
+                .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
   }
@@ -103,12 +103,14 @@ public class GetInvestorByIdRestIT {
     @Sql(value = "classpath:init/data-investor.sql", executionPhase = BEFORE_TEST_METHOD),
     @Sql(value = "classpath:init/cleanup.sql", executionPhase = AFTER_TEST_METHOD)
   })
-  public void givenWrongIdNumber_whenGetInvestorByIdNumber_thenStatus404() throws Exception {
+  public void givenWrongId_whenGetInvestorById_thenStatus404() throws Exception {
     // given
     final Long id = 10L;
 
     // when then
-    mvc.perform(get(PATH + SUBPATH + SLASH + id).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(
+            get(BASE_PATH_V1 + INVESTORS_SUBPATH + SLASH + id)
+                .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.code", is("ERR404")))

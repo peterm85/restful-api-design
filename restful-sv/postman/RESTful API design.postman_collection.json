@@ -24,7 +24,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor/1",
+					"raw": "http://localhost:8080/api/invest/v1/investors/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -32,9 +32,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
-						"investor",
+						"v1",
+						"investors",
 						"1"
 					]
 				}
@@ -59,7 +59,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor",
+					"raw": "http://localhost:8080/api/invest/v1/investors",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -67,9 +67,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
-						"investor"
+						"v1",
+						"investors"
 					]
 				}
 			},
@@ -93,7 +93,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/v2/invest/investor",
+					"raw": "http://localhost:8080/api/invest/v2/investors",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -101,9 +101,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v2",
 						"invest",
-						"investor"
+						"v2",
+						"investors"
 					]
 				}
 			},
@@ -124,7 +124,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor",
+					"raw": "http://localhost:8080/api/invest/v1/investors",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -132,9 +132,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
-						"investor"
+						"v1",
+						"investors"
 					]
 				}
 			},
@@ -155,7 +155,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor/1",
+					"raw": "http://localhost:8080/api/invest/v1/investors/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -163,9 +163,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
-						"investor",
+						"v1",
+						"investors",
 						"1"
 					]
 				}
@@ -187,7 +187,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor/1",
+					"raw": "http://localhost:8080/api/invest/v1/investors/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -195,9 +195,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
-						"investor",
+						"v1",
+						"investors",
 						"1"
 					]
 				}
@@ -219,7 +219,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/stock",
+					"raw": "http://localhost:8080/api/invest/v1/stocks",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -227,9 +227,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
-						"stock"
+						"v1",
+						"stocks"
 					]
 				}
 			},
@@ -248,7 +248,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/stock",
+					"raw": "http://localhost:8080/api/invest/v1/stocks",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -256,9 +256,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
-						"stock"
+						"v1",
+						"stocks"
 					]
 				}
 			},
@@ -290,7 +290,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/stock/ES0105611000",
+					"raw": "http://localhost:8080/api/invest/v1/stocks/ES0105611000",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -298,9 +298,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
-						"stock",
+						"v1",
+						"stocks",
 						"ES0105611000"
 					]
 				}
@@ -322,7 +322,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/investor/1/purchase",
+					"raw": "http://localhost:8080/api/invest/v1/investors/1/purchase",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -330,9 +330,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
-						"investor",
+						"v1",
+						"investors",
 						"1",
 						"purchase"
 					]
@@ -343,7 +343,7 @@
 		{
 			"name": "Buy batch shares",
 			"request": {
-				"method": "POST",
+				"method": "PATCH",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -355,7 +355,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/invest/purchase",
+					"raw": "http://localhost:8080/api/invest/v1/investors/purchase",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -363,8 +363,9 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"v1",
 						"invest",
+						"v1",
+						"investors",
 						"purchase"
 					]
 				}

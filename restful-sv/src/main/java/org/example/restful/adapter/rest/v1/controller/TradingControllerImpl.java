@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,22 +25,20 @@ import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
+import lombok.extern.slf4j.Slf4j;
+
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static org.example.restful.constant.Roles.ADMIN;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.ID_PATH_PARAM;
+import static org.example.restful.constant.UrlConstants.INVESTORS_SUBPATH;
+import static org.example.restful.constant.UrlConstants.PURCHASE_ACTION;
 
+@Slf4j
 @RestController
-@RequestMapping(TradingControllerImpl.PATH)
+@RequestMapping(BASE_PATH_V1)
 public class TradingControllerImpl implements TradingController {
-
-  public static final String PATH = "/api/v1/invest";
-  public static final String SLASH = "/";
-  public static final String SUBPATH = SLASH + "investor";
-  private static final String ID_PATH_PARAM = SLASH + "{id}";
-  public static final String PURCHASE_OPERATION = SLASH + "purchase";
-  private static final String PURCHASE_OPERATION_PATH =
-      SUBPATH + ID_PATH_PARAM + PURCHASE_OPERATION;
-  private static final String PURCHASE_BATCH_OPERATION_PATH = PURCHASE_OPERATION;
 
   @Autowired private TradingService tradingService;
 
@@ -49,9 +48,12 @@ public class TradingControllerImpl implements TradingController {
 
   @Override
   @RolesAllowed(USER)
-  @PostMapping(value = PURCHASE_OPERATION_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(
+      value = INVESTORS_SUBPATH + ID_PATH_PARAM + PURCHASE_ACTION,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<PurchaseResponse> purchase(
       @PathVariable final Long id, @Valid @RequestBody final PurchaseRequest purchaseRequest) {
+    log.info("Purchasing shares from investor {}", id);
 
     final Operation operation =
         tradingService.purchase(id, requestConverter.convert(purchaseRequest));
@@ -61,9 +63,12 @@ public class TradingControllerImpl implements TradingController {
 
   @Override
   @RolesAllowed(ADMIN)
-  @PostMapping(value = PURCHASE_BATCH_OPERATION_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PatchMapping(
+      value = INVESTORS_SUBPATH + PURCHASE_ACTION,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> batchPurchase(
       @Valid @RequestBody final List<PurchaseBatchRequest> purchaseRequests) {
+    log.info("Starting batch purchase operation");
 
     supplyAsync(
         () ->
@@ -73,6 +78,7 @@ public class TradingControllerImpl implements TradingController {
                         tradingService.purchase(
                             request.getInvestorId(), requestBatchConverter.convert(request))));
 
+    log.info("Ending batch purchase operation");
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
   }
 }

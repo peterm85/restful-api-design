@@ -11,10 +11,11 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import static org.example.restful.constant.Roles.ADMIN;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V2;
+import static org.example.restful.constant.UrlConstants.INVESTORS_SUBPATH;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -33,25 +34,15 @@ public class GetAllInvestorsRestIT {
 
   @Autowired private MockMvc mvc;
 
-  private static ObjectMapper mapper = new ObjectMapper();
-
-  private static String V1_PATH =
-      org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.PATH;
-  private static String V1_SUBPATH =
-      org.example.restful.adapter.rest.v1.controller.InvestorControllerImpl.SUBPATH;
-  private static String V2_PATH =
-      org.example.restful.adapter.rest.v2.controller.InvestorControllerV2Impl.PATH;
-  private static String V2_SUBPATH =
-      org.example.restful.adapter.rest.v2.controller.InvestorControllerV2Impl.SUBPATH;
-
   @Test
   @WithMockUser(roles = ADMIN)
   public void whenGetAllInvestors_thenStatus409() throws Exception {
     // given
-    final String expectedLocationRedirection = V2_PATH + V2_SUBPATH + "?offset=0&limit=30";
+    final String expectedLocationRedirection =
+        BASE_PATH_V2 + INVESTORS_SUBPATH + "?offset=0&limit=30";
 
     // when then
-    mvc.perform(get(V1_PATH + V1_SUBPATH).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(BASE_PATH_V1 + INVESTORS_SUBPATH).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isPermanentRedirect())
         .andExpect(header().string("location", equalTo(expectedLocationRedirection)));
   }
@@ -65,7 +56,7 @@ public class GetAllInvestorsRestIT {
   public void givenPageAndSizewhenGetAllInvestorsV2_thenStatus206() throws Exception {
     // when then
     mvc.perform(
-            get(V2_PATH + V2_SUBPATH)
+            get(BASE_PATH_V2 + INVESTORS_SUBPATH)
                 .queryParam("offset", "0")
                 .queryParam("limit", "3")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -86,7 +77,7 @@ public class GetAllInvestorsRestIT {
   public void givenPageAndSizewhenGetAllInvestorsV2_thenStatus200() throws Exception {
     // when then
     mvc.perform(
-            get(V2_PATH + V2_SUBPATH)
+            get(BASE_PATH_V2 + INVESTORS_SUBPATH)
                 .queryParam("offset", "0")
                 .queryParam("limit", "10")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -102,7 +93,7 @@ public class GetAllInvestorsRestIT {
   @WithMockUser(roles = ADMIN)
   public void givenNoPageNoneSizewhenGetAllInvestorsV2_thenStatus200() throws Exception {
     // when then
-    mvc.perform(get(V2_PATH + V2_SUBPATH).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(BASE_PATH_V2 + INVESTORS_SUBPATH).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
   }
 
@@ -111,7 +102,7 @@ public class GetAllInvestorsRestIT {
   public void givenInvalidAuthRolewhenGetAllInvestorsV2_thenStatus401() throws Exception {
     // when then
     mvc.perform(
-            get(V2_PATH + V2_SUBPATH)
+            get(BASE_PATH_V2 + INVESTORS_SUBPATH)
                 .queryParam("offset", "0")
                 .queryParam("limit", "3")
                 .contentType(MediaType.APPLICATION_JSON))

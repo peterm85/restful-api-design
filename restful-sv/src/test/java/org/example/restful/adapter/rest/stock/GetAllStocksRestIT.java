@@ -12,11 +12,9 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.example.restful.adapter.rest.v1.controller.StockControllerImpl.PATH;
-import static org.example.restful.adapter.rest.v1.controller.StockControllerImpl.SUBPATH;
 import static org.example.restful.constant.Roles.USER;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.STOCKS_SUBPATH;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -36,8 +34,6 @@ public class GetAllStocksRestIT {
 
   @Autowired private MockMvc mvc;
 
-  private static ObjectMapper mapper = new ObjectMapper();
-
   @Test
   @WithMockUser(roles = USER)
   @SqlGroup({
@@ -50,7 +46,7 @@ public class GetAllStocksRestIT {
   public void whenGetAllStocks_thenStatus200() throws Exception {
 
     // when then
-    mvc.perform(get(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(BASE_PATH_V1 + STOCKS_SUBPATH).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", hasSize(3)))

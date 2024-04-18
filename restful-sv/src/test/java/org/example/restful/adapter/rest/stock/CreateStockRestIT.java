@@ -14,9 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.example.restful.adapter.rest.v1.controller.StockControllerImpl.PATH;
-import static org.example.restful.adapter.rest.v1.controller.StockControllerImpl.SUBPATH;
 import static org.example.restful.constant.Roles.ADMIN;
+import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
+import static org.example.restful.constant.UrlConstants.STOCKS_SUBPATH;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasKey;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -49,7 +49,9 @@ public class CreateStockRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+            post(BASE_PATH_V1 + STOCKS_SUBPATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
         .andExpect(status().isCreated())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.isin", is("ES0105611000")))
@@ -66,7 +68,9 @@ public class CreateStockRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+            post(BASE_PATH_V1 + STOCKS_SUBPATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
         .andExpect(status().isBadRequest())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
   }
@@ -85,7 +89,9 @@ public class CreateStockRestIT {
 
     // when then
     mvc.perform(
-            post(PATH + SUBPATH).contentType(MediaType.APPLICATION_JSON).content(asJson(request)))
+            post(BASE_PATH_V1 + STOCKS_SUBPATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)))
         .andExpect(status().isUnauthorized())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
   }
