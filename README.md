@@ -98,7 +98,7 @@ Ofrece la posibilidad de que un cliente pueda solicitar la información de un rec
 
 Se puede manejar de diferentes formas:
 - **Mediante cabeceras**: Accept=application/json ó Accept-language=ES_es
-- **Mediante url**: http://enterprise.com/api/hrservice/v1/employees/20423.json
+- **Mediante url**: /api/invest/v1/investors/20423.json
 - **Mediante queryParams**: ?accept=json ó ?accept-language=ES_es
 
 ![Content Negotiation](doc/contentNegotiation.png)
@@ -127,7 +127,7 @@ Existen diferentes formas de implementar la paginación:
 >[InvestorControllerV2Impl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v2/controller/InvestorControllerV2Impl.java)
 
 ```
-  @GetMapping(value = SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = INVESTORS_SUBPATH, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InvestorResponsePage> getAllInvestors(
       final Optional<Long> offset, final Optional<Integer> limit) {
 
@@ -173,7 +173,7 @@ Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se 
 ```
   @Cacheable(value = "investor")
   @GetMapping(
-      value = SUBPATH + ID_PATH_PARAM,
+      value = INVESTORS_SUBPATH + ID_PATH_PARAM,
       produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
   public ResponseEntity<InvestorResponse> getInvestor(@PathVariable final Long id) {
   
@@ -188,7 +188,7 @@ Las peticiones GET deberían ser almacenables en caché por defecto, hasta que se 
   
   @CacheEvict(value = "investor", key = "#id")
   @PutMapping(
-      value = SUBPATH + ID_PATH_PARAM, 
+      value = INVESTORS_SUBPATH + ID_PATH_PARAM,
       consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity updateInvestor(
       @PathVariable final Long id, @RequestBody final InvestorRequest investorRequest) {
@@ -219,14 +219,16 @@ En este caso podemos devolver el estado *202 - Accepted* de modo que el usuario 
 >[TradingControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/TradingControllerImpl.java)
 
 ```
-  @PostMapping(value = PURCHASE_BATCH_OPERATION_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PatchMapping(
+      value = INVESTORS_SUBPATH + PURCHASE_ACTION,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> batchPurchase(
       @Valid @RequestBody final List<PurchaseBatchRequest> purchaseRequests) {
 
-    supplyAsync(
+    runAsync(
         () ->
             purchaseRequests.stream()
-                .map(
+                .forEach(
                     request ->
                         tradingService.purchase(
                             request.getInvestorId(), requestBatchConverter.convert(request))));
@@ -260,19 +262,19 @@ Existe una problemática específica para las aplicaciones multiplataforma: aquell
 
 Un aspecto importante en las APIs RESTful es la seguridad. A continuación enumeraremos algunos de los puntos más importantes:
 
-- Política de mínimos permisos (@RolesAllowed)
+- Política de mínimos permisos (@RolesAllowed ó @PreAuthorize)
 - Hazlo simple. Cuanto más 'innecesariamente' compleja es una solución, más facil es dejar abierta alguna brecha
 - Siempre usar el protocolo HTTPs para asegurar las conexiones
 - Utiliza contraseñas con hash
 - Nunca exponer información sensible en las URLs tales como usuarios, contraseñas, tokens, etc.
 - Considera el uso de OAuth en lugar de la autenticación básica (aunque ésta sea suficiente)
-- Valida los parámetros de entrada (@Valid)
+- Valida los parámetros de entrada (@Valid) y gestiona correctamente los datos que vas a devolver
 
 >[InvestorControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/InvestorControllerImpl.java)
 
 ```
   @RolesAllowed({USER, ADMIN})
-  @PostMapping(value = SUBPATH,
+  @PostMapping(value = INVESTORS_SUBPATH,
                consumes = MediaType.APPLICATION_JSON_VALUE,
                produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InvestorResponse> createInvestor(
@@ -290,52 +292,50 @@ Un aspecto importante en las APIs RESTful es la seguridad. A continuación enumer
 
 ### Versionado
 
-Es muy dificil afirmar que una API va a mantenerse intacta a lo largo de su vida sin necesidad de ningún cambio. En el caso de cambios menores, corrección de errores, etc. no sería necesario un versionado del mismo. Sin embargo, para cambios importantes o que pudieran resultar incompatibles con el funcionamiento de la versión anterior se recomienda anotar con versiones cada uno de los comportamientos.
+Es casi imposible afirmar que una API va a mantenerse intacta a lo largo de su vida sin necesidad de ningún cambio. En el caso de cambios menores, corrección de errores, etc. quizás no sea necesario un versionado del mismo. Sin embargo, para cambios importantes o que pudieran resultar incompatibles con el funcionamiento anterior se recomienda anotar con versiones cada uno de los comportamientos.
 
 A continuación veremos diferentes formas de versionar una API:
 
-- Mediante URI path: *http://localhost/v2/resource*
+- Mediante URI path: */v2/resource*
 - Mediante query parameter: *?version=2.0*
 - Mediante custom headers: *x-resource-version=2.0*
 - Mediante content-negociation: *Accept=application/resource-v2.0+json*
 
-<img src="doc/versioning.png" alt="URI path versioning"/>
+![URI path versioning](doc/versioning.png)
 
-Quedará en manos del negocio la decisión de durante cuanto tiempo se deberán mantener versiones antiguas de un *endPoint* y el momento oportuno para darlo totalmente de baja.
+Quedará en manos del negocio la decisión de durante cuanto tiempo se deberán mantener versiones antiguas de un *endPoint* y el momento oportuno para darlo totalmente de baja, aunque se recomienda no tener más de dos versiones activas de un mismo recurso.
 
 
 ##### Redirecciones
 
-Aquellos endpoints que quedaran obsoletos o temporalmente inutilizables deberían comunicar correctamente esta situación y, en caso de que sea posible, proveer una alternativa al cliente. De este modo podríamos devolver un error HTTP *301 - Permanent redirect* o *307 - Temporary redirect* e incluir la cabecera *location* con la url alternativa.
+Aquellos endpoints que quedaran obsoletos o temporalmente inutilizables deberían comunicar su situación inmediatamente a los posibles clientes. En casos excepcionales sería posible proveer una alternativa de modo que devolviéramos un error HTTP *301 - Permanent redirect* o *307 - Temporary redirect* e incluir la cabecera *location* con la url alternativa.
 
 >[InvestorControllerImpl.java](restful-sv/src/main/java/org/example/restful/adapter/rest/v1/controller/InvestorControllerImpl.java)
 
 ```
   @Deprecated
   @RolesAllowed(ADMIN)
-  @GetMapping(value = SUBPATH)
+  @GetMapping(value = INVESTORS_SUBPATH)
   public ResponseEntity<List<InvestorResponse>> getAllInvestors() {
 
     return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
         .location(
             UriComponentsBuilder.newInstance()
-                .path(NEW_PATH.concat(SUBPATH))
-                .query("page=0&size=3")
+                .path(BASE_PATH_V2.concat(INVESTORS_SUBPATH))
+                .query("offset=" + PAGINATION_DEFAULT_OFFSET + "&limit=" + PAGINATION_DEFAULT_LIMIT)
                 .build()
                 .toUri())
         .build();
   }
 ```
 
-Este patrón permite al cliente poder recuperarse y finalizar la operación de forma satisfactoria. En nuestro caso de ejemplo, la propia interface de Swagger ya se encarga de redireccionar y devolver los resultados desde la url alternativa:
+Este patrón permite al cliente poder recuperarse y finalizar la operación de forma satisfactoria. En nuestro caso, si realizamos la operación con la propia interface de Swagger ésta ya se encarga de redireccionar y devolver los resultados desde la url alternativa.
 
 
 ### Manejo de errores
 
-Es recomendable asociar correctamente el código de error HTTP devuelto con el mensaje mostrado, con el objetivo de evitar malentendidos y ser más transparente de cara al usuario.
+Es recomendable asociar correctamente un código de error HTTP devuelto con el mensaje mostrado, con el objetivo de evitar malentendidos y ser más transparente de cara al usuario.
 Para ello es una práctica común generar excepciones personalizadas que nos permitan identificar correctamente el momento y la causa del error.
-
-<img src="doc/exception.png" alt="Exception"/>
 
 >[CustomControllerAdvice.java](restful-sv/src/main/java/org/example/restful/configuration/CustomControllerAdvice.java)
 
@@ -354,11 +354,29 @@ Para ello es una práctica común generar excepciones personalizadas que nos permi
   }
 ```
 
-Sin embargo, por motivos de seguridad, no deberíamos mostrar información sensible demasiado detallada en estos mensajes por las siguientes razones:
+Del mismo modo, por motivos de seguridad, tambien es importante no mostrar información sensible demasiado detallada en estos mensajes por las siguientes razones:
 - En caso de una brecha de seguridad, un atacante podría explotar la información obtenida en estas respuestas, ya sean trazas, identificadores, etc.
 - Normalmente estos mensajes pueden ser almacenados en ficheros de logs en claro, dejando los datos expuestos para ser explotados más tarde.
 
-La clave está en el equilibrio.
+```
+	GET /api/invest/v1/investors/10 HTTP/1.1
+	Accept: application/json
+	Authorization: Basic YWRtaW46YWRtaW4=
+	User-Agent: PostmanRuntime/7.37.3
+	Cache-Control: no-cache
+	Postman-Token: b001b2a0-5707-4ac2-a596-d05b05eabee8
+	Host: localhost:8080
+	Connection: keep-alive
+	Cookie: JSESSIONID=B3CC2DAD5A5772621C26C56373598B6B
+	 
+	HTTP/1.1 404 Not Found
+	Content-Type: application/json
+	Date: Thu, 18 Apr 2024 08:53:50 GMT
+	 
+	{"code":"ERR404","message":"Investor not found"}
+```
+
+Como en todo, la clave está en el equilibrio.
 
 
 ### Documentación
@@ -368,16 +386,53 @@ La clave está en el equilibrio.
 
 ##### Descubrimiento
 
-También conocido como HATEOAS (Hypermedia As The Engine Of Application State). Provee un listado de URL’s con las operaciones que se permiten realizar sobre el recurso.
+También conocido como HATEOAS (Hypermedia As The Engine Of Application State). Provee un listado de URL’s con las operaciones que se permiten realizar sobre el recurso. En algunas situaciones resulta interesante utilizar esta solución dado que el cliente no necesitaría conocer de antemano las operaciones que puede realizar sobre un recurso, y podría utilizar aquellas que se le proveen.
 
-Por ejemplo, como respuesta a una operación de creación POST, la respuesta podría devolver la siguiente estructura:
+Por ejemplo, como respuesta a una operación de creación POST, la respuesta podría devolver el siguiente *payload*:
 
-<img src="doc/HATEOAS.png" alt="HATEOAS"/>
+```
+{
+    "id": 1,
+    "idNumber": "76245691H",
+    "name": "Manuel Rodriguez",
+    "age": 37,
+    "country": "SPAIN",
+    "_links": {
+        "get": {
+            "href": "http://localhost:8080/api/invest/v1/investors/1"
+        },
+        "put": {
+            "href": "http://localhost:8080/api/invest/v1/investors/1"
+        },
+        "delete": {
+            "href": "http://localhost:8080/api/invest/v1/investors/1"
+        }
+    }
+}
+```
 
-Del mismo modo también sería de utilidad limitar aquellos métodos HTTP que no están permitidos (*405 - Method Not Allowed*) para informar al cliente sobre qué operaciones puede y no puede realizar en el recurso.
+Del mismo modo también es de utilidad limitar aquellos métodos HTTP que no están permitidos (*405 - Method Not Allowed*) para informar al cliente sobre qué operaciones puede y no puede realizar en el recurso.
 
-<img src="doc/notAllowedMethod.png" alt="Method Not Allowed"/>
-
+```
+	PATCH /api/invest/v1/investors/1 HTTP/1.1
+	Content-Type: application/json
+	Authorization: Basic YWRtaW46YWRtaW4=
+	User-Agent: PostmanRuntime/7.37.3
+	Accept: */*
+	Cache-Control: no-cache
+	Postman-Token: 94b04d17-fd4b-4c54-8705-9665a9a490b1
+	Host: localhost:8080
+	Accept-Encoding: gzip, deflate, br
+	Connection: keep-alive
+	Content-Length: 2
+	Cookie: JSESSIONID=2B4AEBDAA01609D9181B8DBAD4ACCFDB
+	 
+	{}
+	 
+	HTTP/1.1 405 Method Not Allowed
+	Allow: GET,PUT,DELETE
+	Date: Thu, 18 Apr 2024 08:50:01 GMT
+```
 
 ## <a name="api-first">API first</a> [&#8593;](#index)
 
