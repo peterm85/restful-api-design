@@ -1,5 +1,7 @@
 # RESTful API design & best practices
 
+*Read this document in [english](https://github.com/peterm85/restful-api-design/blob/master/README_en.md)*
+
 ## ¿Qué vamos a ver?
 
 En este apartado se pretende recoger, de manera resumida, los diferentes tipos de patrones y buenas prácticas a la hora de diseñar API RESTful. Además se plantearán algunos ejemplos sobre cómo llevarlos a cabo bajo el framework Spring.
