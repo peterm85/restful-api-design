@@ -1,24 +1,22 @@
 package org.example.restful.adapter.rest.v1.converter;
 
-import org.example.restful.domain.Operation;
 import org.example.restful.domain.OperationType;
 import org.example.restful.domain.OrderType;
-import org.example.restful.domain.Stock;
-import org.example.restful.port.rest.v1.api.model.PurchaseBatchRequest;
+import org.example.restful.domain.dtos.CreateOperationDto;
+import org.example.restful.port.rest.v1.api.model.PurchaseRequest;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PurchaseBatchRequestToOperationConverter
-    implements Converter<PurchaseBatchRequest, Operation> {
+public class PurchaseRequestToCreateOperationDtoConverter
+    implements Converter<PurchaseRequest, CreateOperationDto> {
 
   @Override
-  public Operation convert(PurchaseBatchRequest request) {
+  public CreateOperationDto convert(PurchaseRequest request) {
     if (request == null) {
       return null;
     } else {
-      return Operation.builder()
-          .stock(Stock.builder().isin(request.getIsin()).build())
+      return CreateOperationDto.builder()
           .amount(request.getAmount())
           .limitedPrize(request.getLimitedPrize())
           .orderType(OrderType.valueOf(request.getOrderType().name()))

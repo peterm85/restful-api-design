@@ -1,8 +1,8 @@
 package org.example.restful.adapter.rest.v1.controller;
 
 import org.example.restful.adapter.rest.v1.converter.OperationToPurchaseResponseConverter;
-import org.example.restful.adapter.rest.v1.converter.PurchaseBatchRequestToOperationConverter;
-import org.example.restful.adapter.rest.v1.converter.PurchaseRequestToOperationConverter;
+import org.example.restful.adapter.rest.v1.converter.PurchaseBatchRequestToCreateOperationDtoConverter;
+import org.example.restful.adapter.rest.v1.converter.PurchaseRequestToCreateOperationDtoConverter;
 import org.example.restful.domain.Operation;
 import org.example.restful.port.rest.v1.TradingController;
 import org.example.restful.port.rest.v1.api.model.PurchaseBatchRequest;
@@ -42,8 +42,8 @@ public class TradingControllerImpl implements TradingController {
 
   @Autowired private TradingService tradingService;
 
-  @Autowired private PurchaseRequestToOperationConverter requestConverter;
-  @Autowired private PurchaseBatchRequestToOperationConverter requestBatchConverter;
+  @Autowired private PurchaseRequestToCreateOperationDtoConverter requestConverter;
+  @Autowired private PurchaseBatchRequestToCreateOperationDtoConverter requestBatchConverter;
   @Autowired private OperationToPurchaseResponseConverter responseConverter;
 
   @Override
@@ -56,7 +56,8 @@ public class TradingControllerImpl implements TradingController {
     log.info("Purchasing shares from investor {}", id);
 
     final Operation operation =
-        tradingService.purchase(id, requestConverter.convert(purchaseRequest));
+        tradingService.purchase(
+            requestConverter.convert(purchaseRequest), id, purchaseRequest.getIsin());
 
     return ResponseEntity.status(HttpStatus.CREATED).body(responseConverter.convert(operation));
   }
@@ -76,7 +77,9 @@ public class TradingControllerImpl implements TradingController {
                 .forEach(
                     request ->
                         tradingService.purchase(
-                            request.getInvestorId(), requestBatchConverter.convert(request))));
+                            requestBatchConverter.convert(request),
+                            request.getInvestorId(),
+                            request.getIsin())));
 
     log.info("Ending batch purchase operation");
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
