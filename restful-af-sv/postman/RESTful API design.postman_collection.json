@@ -1,0 +1,411 @@
+{
+	"info": {
+		"_postman_id": "15944c0f-2c0f-453e-aa84-8bb72c1105e0",
+		"name": "RESTful API design",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5278941"
+	},
+	"item": [
+		{
+			"name": "Get investor by Id",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept-encoding": true,
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/investors/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"investors",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all investors",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept-encoding": true,
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/investors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"investors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all investors V2",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept-encoding": true,
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v2/investors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v2",
+						"investors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create investor",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idNumber\": \"76245691H\",\r\n  \"name\": \"Manuel Rodriguez\",\r\n  \"age\": 37,\r\n  \"country\": \"SPAIN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/investors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"investors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update investor",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idNumber\": \"76245691H\",\r\n  \"name\": \"Manuel Rodriguez\",\r\n  \"age\": 42,\r\n  \"country\": \"SPAIN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/investors/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"investors",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Not allowed method",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/investors/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"investors",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create stock",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"isin\": \"ES0105611000\",\r\n  \"corporationName\": \"Singular People\",\r\n  \"market\": \"MAD\",\r\n  \"currency\": \"EUR\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/stocks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"stocks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all stocks",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/stocks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"stocks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modify stock",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json-patch+json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"op\":\"replace\", \r\n        \"path\":\"/currency\", \r\n        \"value\":\"USD\"\r\n    }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/stocks/ES0105611000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"stocks",
+						"ES0105611000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy shares",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"isin\": \"ES0105611000\",\r\n  \"amount\": 150,\r\n  \"limitedPrize\": 3.56,\r\n  \"orderType\": \"PERMANENT\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/investors/1/purchase",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"investors",
+						"1",
+						"purchase"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy batch shares",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"investorId\": 1,\r\n    \"isin\": \"ES0105611000\",\r\n    \"amount\": 150,\r\n    \"limitedPrize\": 3.56,\r\n    \"orderType\": \"PERMANENT\"\r\n  },\r\n  {\r\n    \"investorId\": 2,\r\n    \"isin\": \"ES0105611000\",\r\n    \"amount\": 50,\r\n    \"limitedPrize\": 3.48,\r\n    \"orderType\": \"PERMANENT\"\r\n  }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/invest/v1/investors/purchase",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"invest",
+						"v1",
+						"investors",
+						"purchase"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "admin",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

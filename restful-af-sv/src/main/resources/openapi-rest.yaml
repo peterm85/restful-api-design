@@ -1,0 +1,327 @@
+openapi: 3.0.3
+info:
+  title: Resful API example
+  description: |-
+    A simple invest API that allows two operations:
+    - get account balance given account number
+    - deposit amount to a account 
+  version: 2.0-SNAPSHOT
+  contact:
+    name: Pedro Miguel Rodriguez
+
+servers:
+  - url: https://testenvironment.org/api/v1
+  - url: https://prodenvironment.org/api/v1
+
+tags:
+  - name: Investors
+    description: Operations to manage investors
+  - name: Stocks
+    description: Operations to manage stocks
+  - name: Trading
+    description: Trading operations
+    
+paths:
+  /api/invest/v1/investors:
+    post:
+      tags:
+        - Investors
+      summary: Create investor
+      description: | 
+        This endpoint permits creating an investor
+        
+        ```Roles: USER or ADMIN```
+      operationId: createInvestor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestorRequest'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestorResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      deprecated: true
+      tags:
+        - Investors
+      summary: Get all investors information
+      description: | 
+        This endpoint permits get all investors information
+        
+        ```Roles: ADMIN```
+      operationId: getInvestors
+      responses:
+        308:
+          $ref: '#/components/responses/PermanentRedirect'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+
+  /api/invest/v1/investors/{id}:
+    get:
+      tags:
+        - Investors
+      summary: Get investor information
+      description: | 
+        This endpoint permits get investor information using investor identification
+        
+        ```Roles: USER or ADMIN```
+      operationId: getInvestorById
+      parameters:
+        - $ref: '#/components/parameters/InvestorIdParam'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestorResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        406:
+          $ref: '#/components/responses/NotAcceptable'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Investors
+      summary: Update an investor
+      description: | 
+        This endpoint permits update an investor
+        
+        ```Roles: USER or ADMIN```
+      operationId: updateInvestor
+      parameters:
+        - $ref: '#/components/parameters/InvestorIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestorRequest'
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        406:
+          $ref: '#/components/responses/NotAcceptable'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Investors
+      summary: Delete an investor
+      description: | 
+        This endpoint permits delete an investor
+        
+        ```Roles: USER or ADMIN```
+      operationId: updateInvestor
+      parameters:
+        - $ref: '#/components/parameters/InvestorIdParam'
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        406:
+          $ref: '#/components/responses/NotAcceptable'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    InvestorRequest:
+      description: Sample request
+      type: object
+      additionalProperties: false
+      required:
+        - idNumber
+        - name
+        - age
+        - country
+      properties:
+        idNumber:
+          description: Investor identification number 
+          type: string
+          maxLength: 20
+          example: '76245691H'
+        name:
+          description: Investor name
+          type: string
+          maxLength: 100
+          example: 'Manuel Rodriguez'
+        age:
+          description: Investor age 
+          type: number
+          max: 99
+          min: 18
+          example: '37'
+        country:
+          description: Investor country
+          type: string
+          example: 'SPAIN'
+
+    InvestorResponse:
+      type: object
+      properties:
+        id:
+          description: Investor identifier
+          type: integer
+          example: '123456'
+        idNumber:
+          description: Investor identification number 
+          type: string
+          maxLength: 20
+          example: '76245691H'
+        name:
+          description: Investor name
+          type: string
+          maxLength: 100
+          example: 'Manuel Rodriguez'
+        age:
+          description: Investor age 
+          type: number
+          max: 99
+          min: 18
+          example: '37'
+        country:
+          description: Investor country
+          type: string
+          example: 'SPAIN'
+        links:
+          description: HATEOAS links
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              href:
+                type: string
+              rel:
+                type: string
+    
+    
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          minimum: 400
+          maximum: 600
+          exclusiveMaximum: true
+          example: 404
+        message:
+          type: string
+          maxLength: 500
+          description: A short summary of the problem
+          example: Investor not found
+
+  parameters:
+    InvestorIdParam:
+      in: query
+      name: investorId
+      required: true
+      description: Investor identifier
+      schema:
+        type: integer
+      example: '123456'
+
+  responses:
+    NoContent:
+      description: No content
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Bad Request
+            code: 400
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+            code: 401
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Forbidden
+            code: 403
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+            code: 404
+    NotAcceptable:
+      description: Not Acceptable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Format not acceptable
+            code: 406
+    InternalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: InternalServerError
+            code: 500
+    PermanentRedirect:
+      description: PermanentRedirect
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: PermanentRedirect
+            code: 308
