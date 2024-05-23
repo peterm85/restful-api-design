@@ -1,7 +1,7 @@
 package org.example.restful.adapter.rest.v1.converter;
 
 import org.example.restful.domain.Stock;
-import org.example.restful.port.rest.v1.api.model.StockRequest;
+import org.openapitools.model.StockRequest;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

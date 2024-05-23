@@ -82,7 +82,7 @@
 		    <artifactId>json-patch</artifactId>
 		    <version>${json-patch.version}</version>
 		</dependency>
-                
+		
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -163,7 +163,7 @@
 			                <inputSpec>./src/main/resources/openapi-rest.yaml</inputSpec>
 			                <generatorName>spring</generatorName>
 			                <configOptions>
-			                    <additionalModelTypeAnnotations>@lombok.Data @lombok.Builder</additionalModelTypeAnnotations>
+			                    <additionalModelTypeAnnotations>@lombok.Data @lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor</additionalModelTypeAnnotations>
 			                    <interfaceOnly>true</interfaceOnly>
 			                    <openApiNullable>false</openApiNullable>
 			                    <useTags>true</useTags>

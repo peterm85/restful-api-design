@@ -203,10 +203,104 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/invest/v1/stocks:
+    post:
+      tags:
+        - Stocks
+      summary: Create stocks
+      description: | 
+        This endpoint permits creating a stock
+        
+        ```Roles: ADMIN```
+      operationId: createStock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockRequest'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      tags:
+        - Stocks
+      summary: Get all stocks information
+      description: | 
+        This endpoint permits get all stocks information
+        
+        ```Roles: USER or ADMIN```
+      operationId: getStocks
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StockResponse'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        406:
+          $ref: '#/components/responses/NotAcceptable'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/invest/v1/stocks/{isin}:
+    patch:
+      tags:
+        - Stocks
+      summary: Update a stock
+      description: | 
+        This endpoint permits update a stock
+        
+        ```Roles: ADMIN```
+      operationId: updateStock
+      parameters:
+        - $ref: '#/components/parameters/IsinParam'
+      requestBody:
+        required: true
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/JsonPatchRequest'
+      responses:
+        200:
+          description: Changes applied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
 components:
   schemas:
     InvestorRequest:
-      description: Sample request
+      description: Investor request
       type: object
       additionalProperties: false
       required:
@@ -237,6 +331,7 @@ components:
           example: 'SPAIN'
 
     InvestorResponse:
+      description: Investor response
       type: object
       properties:
         id:
@@ -279,6 +374,91 @@ components:
             $ref: '#/components/schemas/InvestorResponse'
         pagination:
           $ref: '#/components/schemas/PaginationLinks'
+    
+    StockRequest:
+      description: Stock request
+      type: object
+      additionalProperties: false
+      required:
+        - isin
+        - corporationName
+        - market
+        - currency
+      properties:
+        isin:
+          description: International Securities Identification Number
+          type: string
+          maxLength: 12
+          example: 'ES0105611000'
+        corporationName:
+          description: Corporation name
+          type: string
+          maxLength: 100
+          example: 'Singular People'
+        market:
+          description: Market 
+          type: string
+          maxLength: 3
+          example: 'MAD'
+        currency:
+          description: Currency
+          type: string
+          example: 'EUR'
+    
+    StockResponse:
+      description: Stock response
+      type: object
+      properties:
+        isin:
+          description: International Securities Identification Number
+          type: string
+          maxLength: 12
+          example: 'ES0105611000'
+        corporationName:
+          description: Corporation name
+          type: string
+          maxLength: 100
+          example: 'Singular People'
+        market:
+          description: Market 
+          type: string
+          maxLength: 3
+          example: 'MAD'
+        currency:
+          description: Currency
+          type: string
+          example: 'EUR'
+        _links:
+          description: HATEOAS links
+          type: object
+          additionalProperties:
+            type: string
+    
+    JsonPatchRequest:
+      description: Json patch request
+      type: object
+      properties:
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonPatchOperation'
+    
+    JsonPatchOperation:
+      description: Json patch operation
+      type: object
+      properties:
+        op:
+          description: Operation
+          type: string
+          example: 'replace'
+        path:
+          description: resource path
+          type: string
+          example: '/currency'
+        value:
+          description: value
+          type: string
+          example: 'USD'
     
     PaginationLinks:
       type: object
@@ -336,6 +516,15 @@ components:
         type: integer
         format: int64
       example: '123456'
+    
+    IsinParam:
+      in: path
+      name: isin
+      required: true
+      description: International Securities Identification Number
+      schema:
+        type: string
+      example: 'ES0105611000'
 
     PageableOffsetParam:
       in: query
