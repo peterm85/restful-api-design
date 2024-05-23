@@ -71,7 +71,7 @@ paths:
         403:
           $ref: '#/components/responses/Forbidden'
 
-  /api/invest/v1/investors/{id}:
+  /api/invest/v1/investors/{investorId}:
     get:
       tags:
         - Investors
@@ -88,6 +88,9 @@ paths:
           description: Success
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/InvestorResponse'
+            application/xml:
               schema:
                 $ref: '#/components/schemas/InvestorResponse'
         400:
@@ -142,12 +145,51 @@ paths:
         This endpoint permits delete an investor
         
         ```Roles: USER or ADMIN```
-      operationId: updateInvestor
+      operationId: deleteInvestor
       parameters:
         - $ref: '#/components/parameters/InvestorIdParam'
       responses:
         204:
           $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        406:
+          $ref: '#/components/responses/NotAcceptable'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/invest/v2/investors:
+    get:
+      tags:
+        - Investors
+      summary: Get all investors information by page
+      description: | 
+        This endpoint permits get all investors information
+        
+        ```Roles: ADMIN```
+      operationId: getInvestorsV2
+      parameters:
+        - $ref: '#/components/parameters/PageableOffsetParam'
+        - $ref: '#/components/parameters/PageableLimitParam'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestorResponsePage'
+        206:
+          description: Partial content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestorResponsePage'
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -185,7 +227,7 @@ components:
           example: 'Manuel Rodriguez'
         age:
           description: Investor age 
-          type: number
+          type: integer
           max: 99
           min: 18
           example: '37'
@@ -199,7 +241,7 @@ components:
       properties:
         id:
           description: Investor identifier
-          type: integer
+          type: number
           example: '123456'
         idNumber:
           description: Investor identification number 
@@ -213,7 +255,7 @@ components:
           example: 'Manuel Rodriguez'
         age:
           description: Investor age 
-          type: number
+          type: integer
           max: 99
           min: 18
           example: '37'
@@ -221,19 +263,54 @@ components:
           description: Investor country
           type: string
           example: 'SPAIN'
-        links:
+        _links:
           description: HATEOAS links
+          type: object
+          additionalProperties:
+            type: string
+
+    InvestorResponsePage:
+      type: object
+      properties:
+        data:
+          description: Set of data
           type: array
-          maxItems: 20
           items:
-            type: object
-            properties:
-              href:
-                type: string
-              rel:
-                type: string
+            $ref: '#/components/schemas/InvestorResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationLinks'
     
-    
+    PaginationLinks:
+      type: object
+      properties:
+        offset:
+          description: Offset
+          type: integer
+          example: '0'
+        limit:
+          description: Limit
+          type: integer
+          example: '10'
+        total:
+          description: Total
+          type: integer
+          example: '100'
+        links:
+          $ref: '#/components/schemas/Links'
+          
+    Links:
+      description: HATEOAS links
+      type: object
+      properties:
+        self:
+          type: string
+        prev:
+          type: string
+        next:
+          type: string
+        first:
+          type: string
+          
     Error:
       type: object
       properties:
@@ -251,13 +328,33 @@ components:
 
   parameters:
     InvestorIdParam:
-      in: query
+      in: path
       name: investorId
       required: true
       description: Investor identifier
       schema:
         type: integer
+        format: int64
       example: '123456'
+
+    PageableOffsetParam:
+      in: query
+      name: offset
+      required: false
+      description: Pageable offset
+      schema:
+        type: integer
+        format: int64
+      example: '0'
+        
+    PageableLimitParam:
+      in: query
+      name: limit
+      required: false
+      description: Pageable limit
+      schema:
+        type: integer
+      example: '50'
 
   responses:
     NoContent:

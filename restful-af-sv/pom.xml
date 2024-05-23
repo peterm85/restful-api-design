@@ -117,7 +117,6 @@
 		    <artifactId>spring-security-test</artifactId>
 		    <scope>test</scope>
 		</dependency>
-        
     </dependencies>
 
     <build>
@@ -164,9 +163,11 @@
 			                <inputSpec>./src/main/resources/openapi-rest.yaml</inputSpec>
 			                <generatorName>spring</generatorName>
 			                <configOptions>
+			                    <additionalModelTypeAnnotations>@lombok.Data @lombok.Builder</additionalModelTypeAnnotations>
+			                    <interfaceOnly>true</interfaceOnly>
 			                    <openApiNullable>false</openApiNullable>
 			                    <useTags>true</useTags>
-			                    <interfaceOnly>true</interfaceOnly>
+			                    <serializableModel>true</serializableModel>
 			                </configOptions>
 			            </configuration>
 			        </execution>

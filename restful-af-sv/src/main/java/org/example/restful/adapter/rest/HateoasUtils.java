@@ -1,8 +1,8 @@
 package org.example.restful.adapter.rest;
 
 import org.example.restful.configuration.CacheTTL;
-import org.example.restful.port.rest.v2.api.model.Links;
-import org.example.restful.port.rest.v2.api.model.PaginationLinks;
+import org.openapitools.model.Links;
+import org.openapitools.model.PaginationLinks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.RepresentationModel;
@@ -38,11 +38,12 @@ public abstract class HateoasUtils<T extends RepresentationModel<T>> {
 
   protected PaginationLinks getPagination(
       final Long offset, final Integer limit, final Long total) {
+
     return PaginationLinks.builder()
         .limit(limit)
-        .offset(offset)
-        .total(total)
-        ._links(
+        .offset(offset.intValue())
+        .total(total.intValue())
+        .links(
             Links.builder()
                 .first(
                     ServletUriComponentsBuilder.fromCurrentRequest()

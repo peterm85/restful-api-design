@@ -1,7 +1,7 @@
 package org.example.restful.adapter.rest.v1.converter;
 
 import org.example.restful.domain.Investor;
-import org.example.restful.port.rest.v1.api.model.InvestorRequest;
+import org.openapitools.model.InvestorRequest;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class InvestorRequestToInvestorConverter implements Converter<InvestorReq
       return Investor.builder()
           .idNumber(request.getIdNumber())
           .name(request.getName())
-          .age(request.getAge())
+          .age(request.getAge().intValue())
           .country(request.getCountry())
           .build();
     }

@@ -22,7 +22,7 @@ public class InvestorService {
     return investorRepository.findAll(pageable);
   }
 
-  public Investor createInvestor(final Investor investor) throws Exception {
+  public Investor createInvestor(final Investor investor) {
 
     return investorRepository.save(investor);
   }

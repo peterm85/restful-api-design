@@ -1,7 +1,7 @@
 package org.example.restful.adapter.rest.investor;
 
-import org.example.restful.port.rest.v1.api.model.InvestorRequest;
 import org.junit.jupiter.api.Test;
+import org.openapitools.model.InvestorRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
