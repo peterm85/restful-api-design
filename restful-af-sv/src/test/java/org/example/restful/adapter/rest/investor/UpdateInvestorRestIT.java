@@ -1,19 +1,12 @@
 package org.example.restful.adapter.rest.investor;
 
+import org.example.restful.adapter.rest.AbstractRestIT;
 import org.junit.jupiter.api.Test;
 import org.openapitools.model.InvestorRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.example.restful.constant.Roles.USER;
 import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
@@ -28,14 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
-public class UpdateInvestorRestIT {
-
-  @Autowired private MockMvc mvc;
-
-  private static ObjectMapper mapper = new ObjectMapper();
+public class UpdateInvestorRestIT extends AbstractRestIT {
 
   @Test
   @WithMockUser(roles = USER)
@@ -92,9 +78,5 @@ public class UpdateInvestorRestIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)))
         .andExpect(status().isNotFound());
-  }
-
-  private static String asJson(Object obj) throws JsonProcessingException {
-    return mapper.writeValueAsString(obj);
   }
 }

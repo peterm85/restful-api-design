@@ -1,15 +1,11 @@
 package org.example.restful.adapter.rest.investor;
 
+import org.example.restful.adapter.rest.AbstractRestIT;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.example.restful.constant.Roles.USER;
 import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
@@ -21,12 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
-public class DeleteInvestorRestIT {
-
-  @Autowired private MockMvc mvc;
+public class DeleteInvestorRestIT extends AbstractRestIT {
 
   @Test
   @WithMockUser(roles = USER)

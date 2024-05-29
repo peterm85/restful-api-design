@@ -1,16 +1,12 @@
 package org.example.restful.adapter.rest.stock;
 
+import org.example.restful.adapter.rest.AbstractRestIT;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.example.restful.constant.Roles.USER;
 import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
@@ -27,12 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
-public class GetAllStocksRestIT {
-
-  @Autowired private MockMvc mvc;
+public class GetAllStocksRestIT extends AbstractRestIT {
 
   @Test
   @WithMockUser(roles = USER)

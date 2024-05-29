@@ -1,23 +1,16 @@
 package org.example.restful.adapter.rest.trading;
 
+import org.example.restful.adapter.rest.AbstractRestIT;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.openapitools.model.PurchaseBatchRequest;
 import org.openapitools.model.PurchaseRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -36,14 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
-public class PurchaseSharesRestIT {
-
-  @Autowired private MockMvc mvc;
-
-  private static ObjectMapper mapper = new ObjectMapper();
+public class PurchaseSharesRestIT extends AbstractRestIT {
 
   @Test
   @WithMockUser(roles = USER)
@@ -188,9 +174,5 @@ public class PurchaseSharesRestIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(List.of(request, request2))))
         .andExpect(status().isAccepted());
-  }
-
-  private static String asJson(Object obj) throws JsonProcessingException {
-    return mapper.writeValueAsString(obj);
   }
 }

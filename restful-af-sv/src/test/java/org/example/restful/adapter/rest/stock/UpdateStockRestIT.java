@@ -1,21 +1,14 @@
 package org.example.restful.adapter.rest.stock;
 
+import org.example.restful.adapter.rest.AbstractRestIT;
 import org.junit.jupiter.api.Test;
 import org.openapitools.model.JsonPatchOperation;
 import org.openapitools.model.JsonPatchRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -32,14 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
-public class UpdateStockRestIT {
-
-  @Autowired private MockMvc mvc;
-
-  private static ObjectMapper mapper = new ObjectMapper();
+public class UpdateStockRestIT extends AbstractRestIT {
 
   @Test
   @WithMockUser(roles = ADMIN)
@@ -78,9 +64,5 @@ public class UpdateStockRestIT {
         .andExpect(jsonPath("$.currency", is("USD")))
         .andExpect(jsonPath("$._links", hasKey("get")))
         .andExpect(jsonPath("$._links", hasKey("patch")));
-  }
-
-  private static String asJson(Object obj) throws JsonProcessingException {
-    return mapper.writeValueAsString(obj);
   }
 }

@@ -1,18 +1,11 @@
 package org.example.restful.adapter.rest.stock;
 
+import org.example.restful.adapter.rest.AbstractRestIT;
 import org.junit.jupiter.api.Test;
 import org.openapitools.model.StockRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.example.restful.constant.Roles.ADMIN;
 import static org.example.restful.constant.UrlConstants.BASE_PATH_V1;
@@ -25,14 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
-public class CreateStockRestIT {
-
-  @Autowired private MockMvc mvc;
-
-  private static ObjectMapper mapper = new ObjectMapper();
+public class CreateStockRestIT extends AbstractRestIT {
 
   @Test
   @WithMockUser(roles = ADMIN)
@@ -94,9 +80,5 @@ public class CreateStockRestIT {
                 .content(asJson(request)))
         .andExpect(status().isUnauthorized())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-  }
-
-  private static String asJson(Object obj) throws JsonProcessingException {
-    return mapper.writeValueAsString(obj);
   }
 }
