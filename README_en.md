@@ -457,6 +457,49 @@ The methodology is implemented in 3 phases:
 - Integration phase: Once the API is implemented, we must repoint the mockserver API to the implementation carried out. 
 
 
+###Practical case
+
+Next we will see an example of how our API would look like if we had started with its definition working with API-first methodology.
+
+>[openapi-rest.yaml](restful-af-sv/src/main/resources/openapi-rest.yaml)
+
+```
+  paths:
+  /api/invest/v1/investors:
+    post:
+      tags:
+        - Investors
+      summary: Create investor
+      description: | 
+        This endpoint permits creating an investor
+        
+        ```Roles: USER or ADMIN```
+      operationId: createInvestor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestorRequest'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestorResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+```
+
+As we can see, all the contract model has been auto-generated from its definition, as well as all the Swagger documentation.
+
 ## <a name="bibliography">Bibliography</a> [&#8593;](#index)
 
 - [https://restfulapi.net/](https://restfulapi.net/)
