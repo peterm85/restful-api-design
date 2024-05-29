@@ -1,9 +1,9 @@
-package org.example.restful.adapter.rest.v1.controller;
+package org.example.restful.adapter.rest.controller;
 
 import org.example.restful.adapter.rest.HateoasUtils;
-import org.example.restful.adapter.rest.v1.converter.JsonPatchRequestToJsonPatchConverter;
-import org.example.restful.adapter.rest.v1.converter.StockRequestToStockConverter;
-import org.example.restful.adapter.rest.v1.converter.StockToStockResponseConverter;
+import org.example.restful.adapter.rest.converter.JsonPatchRequestToJsonPatchConverter;
+import org.example.restful.adapter.rest.converter.StockRequestToStockConverter;
+import org.example.restful.adapter.rest.converter.StockToStockResponseConverter;
 import org.example.restful.domain.Stock;
 import org.example.restful.service.StockService;
 import org.openapitools.api.StocksApi;

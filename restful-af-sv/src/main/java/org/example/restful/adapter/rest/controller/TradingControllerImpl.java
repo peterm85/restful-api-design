@@ -1,8 +1,8 @@
-package org.example.restful.adapter.rest.v1.controller;
+package org.example.restful.adapter.rest.controller;
 
-import org.example.restful.adapter.rest.v1.converter.OperationToPurchaseResponseConverter;
-import org.example.restful.adapter.rest.v1.converter.PurchaseBatchRequestToCreateOperationDtoConverter;
-import org.example.restful.adapter.rest.v1.converter.PurchaseRequestToCreateOperationDtoConverter;
+import org.example.restful.adapter.rest.converter.OperationToPurchaseResponseConverter;
+import org.example.restful.adapter.rest.converter.PurchaseBatchRequestToCreateOperationDtoConverter;
+import org.example.restful.adapter.rest.converter.PurchaseRequestToCreateOperationDtoConverter;
 import org.example.restful.domain.Operation;
 import org.example.restful.service.TradingService;
 import org.openapitools.api.TradingApi;

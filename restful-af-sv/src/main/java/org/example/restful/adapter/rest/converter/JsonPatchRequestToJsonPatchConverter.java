@@ -1,4 +1,4 @@
-package org.example.restful.adapter.rest.v1.converter;
+package org.example.restful.adapter.rest.converter;
 
 import org.openapitools.model.JsonPatchRequest;
 import org.springframework.core.convert.converter.Converter;

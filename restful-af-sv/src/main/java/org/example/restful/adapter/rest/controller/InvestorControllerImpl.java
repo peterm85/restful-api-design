@@ -1,8 +1,8 @@
-package org.example.restful.adapter.rest.v1.controller;
+package org.example.restful.adapter.rest.controller;
 
 import org.example.restful.adapter.rest.HateoasUtils;
-import org.example.restful.adapter.rest.v1.converter.InvestorRequestToInvestorConverter;
-import org.example.restful.adapter.rest.v1.converter.InvestorToInvestorResponseConverter;
+import org.example.restful.adapter.rest.converter.InvestorRequestToInvestorConverter;
+import org.example.restful.adapter.rest.converter.InvestorToInvestorResponseConverter;
 import org.example.restful.configuration.CacheTTL;
 import org.example.restful.domain.Investor;
 import org.example.restful.service.InvestorService;
