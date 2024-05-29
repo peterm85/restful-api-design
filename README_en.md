@@ -457,7 +457,7 @@ The methodology is implemented in 3 phases:
 - Integration phase: Once the API is implemented, we must repoint the mockserver API to the implementation carried out. 
 
 
-###Practical case
+### Practical case
 
 Next we will see an example of how our API would look like if we had started with its definition working with API-first methodology.
 

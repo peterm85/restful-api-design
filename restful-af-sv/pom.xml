@@ -163,7 +163,10 @@
 			                <inputSpec>./src/main/resources/openapi-rest.yaml</inputSpec>
 			                <generatorName>spring</generatorName>
 			                <configOptions>
-			                    <additionalModelTypeAnnotations>@lombok.Data @lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor</additionalModelTypeAnnotations>
+			                    <additionalModelTypeAnnotations>
+			                        @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
+			                        @lombok.Data @lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor
+			                    </additionalModelTypeAnnotations>
 			                    <interfaceOnly>true</interfaceOnly>
 			                    <openApiNullable>false</openApiNullable>
 			                    <useTags>true</useTags>

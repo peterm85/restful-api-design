@@ -458,7 +458,7 @@ La metodología se implementa en 3 fases:
 - Fase de integración: Una vez implementada la API debemos reapuntar la API del mockserver a la implementación realizada. 
 
 
-###Caso práctico
+### Caso práctico
 
 A continuación veremos un ejemplo de cómo quedaría nuestra API si hubieramos comenzado con su definición trabajando con metodología API-first.
 
