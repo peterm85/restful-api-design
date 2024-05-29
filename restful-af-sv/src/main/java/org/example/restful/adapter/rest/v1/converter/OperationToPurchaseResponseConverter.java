@@ -1,8 +1,7 @@
 package org.example.restful.adapter.rest.v1.converter;
 
 import org.example.restful.domain.Operation;
-import org.example.restful.port.rest.v1.api.model.OrderTypeRequest;
-import org.example.restful.port.rest.v1.api.model.PurchaseResponse;
+import org.openapitools.model.PurchaseResponse;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +15,12 @@ public class OperationToPurchaseResponseConverter
       return null;
     } else {
       return PurchaseResponse.builder()
-          .id(domain.getId())
+          .operationId(domain.getId())
           .isin(domain.getStock().getIsin())
           .idNumber(domain.getInvestor().getIdNumber())
           .amount(domain.getAmount())
           .limitedPrize(domain.getLimitedPrize())
-          .orderType(OrderTypeRequest.valueOf(domain.getOrderType().name()))
+          .orderType(domain.getOrderType().name())
           .build();
     }
   }

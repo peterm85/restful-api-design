@@ -8,7 +8,6 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,7 @@ public class InvestorToInvestorResponseConverter implements Converter<Investor, 
       return null;
     } else {
       return InvestorResponse.builder()
-          .id(BigDecimal.valueOf(domain.getId()))
+          .id(domain.getId())
           .idNumber(domain.getIdNumber())
           .name(domain.getName())
           .age(domain.getAge())

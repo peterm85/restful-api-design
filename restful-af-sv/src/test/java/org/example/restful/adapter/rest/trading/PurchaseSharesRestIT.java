@@ -1,11 +1,10 @@
 package org.example.restful.adapter.rest.trading;
 
-import org.example.restful.port.rest.v1.api.model.OrderTypeRequest;
-import org.example.restful.port.rest.v1.api.model.PurchaseBatchRequest;
-import org.example.restful.port.rest.v1.api.model.PurchaseRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.openapitools.model.PurchaseBatchRequest;
+import org.openapitools.model.PurchaseRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,7 +65,7 @@ public class PurchaseSharesRestIT {
             .isin(isin)
             .amount(150)
             .limitedPrize(Double.valueOf("3.45"))
-            .orderType(OrderTypeRequest.DAILY)
+            .orderType("DAILY")
             .build();
 
     // when then
@@ -81,7 +80,7 @@ public class PurchaseSharesRestIT {
   }
 
   @Test
-  @WithMockUser(roles = "USER")
+  @WithMockUser(roles = USER)
   public void givenIncompletedBodyRequest_whenPurchaseShares_thenStatus400() throws Exception {
     // given
     final String isin = "ES0105611000";
@@ -110,7 +109,7 @@ public class PurchaseSharesRestIT {
             .isin(isin)
             .amount(150)
             .limitedPrize(Double.valueOf("3.45"))
-            .orderType(OrderTypeRequest.DAILY)
+            .orderType("DAILY")
             .build();
 
     // when then
@@ -141,7 +140,7 @@ public class PurchaseSharesRestIT {
             .isin(isin)
             .amount(150)
             .limitedPrize(Double.valueOf("3.45"))
-            .orderType(OrderTypeRequest.DAILY)
+            .orderType("DAILY")
             .build();
 
     // when then
@@ -172,7 +171,7 @@ public class PurchaseSharesRestIT {
             .isin(isin)
             .amount(150)
             .limitedPrize(Double.valueOf("3.45"))
-            .orderType(OrderTypeRequest.DAILY)
+            .orderType("DAILY")
             .build();
     final PurchaseBatchRequest request2 =
         PurchaseBatchRequest.builder()
@@ -180,7 +179,7 @@ public class PurchaseSharesRestIT {
             .isin(isin)
             .amount(50)
             .limitedPrize(Double.valueOf("3.45"))
-            .orderType(OrderTypeRequest.DAILY)
+            .orderType("DAILY")
             .build();
 
     // when then

@@ -3,7 +3,7 @@ package org.example.restful.adapter.rest.v1.converter;
 import org.example.restful.domain.OperationType;
 import org.example.restful.domain.OrderType;
 import org.example.restful.domain.dtos.CreateOperationDto;
-import org.example.restful.port.rest.v1.api.model.PurchaseRequest;
+import org.openapitools.model.PurchaseRequest;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +18,8 @@ public class PurchaseRequestToCreateOperationDtoConverter
     } else {
       return CreateOperationDto.builder()
           .amount(request.getAmount())
-          .limitedPrize(request.getLimitedPrize())
-          .orderType(OrderType.valueOf(request.getOrderType().name()))
+          .limitedPrize(request.getLimitedPrize().doubleValue())
+          .orderType(OrderType.valueOf(request.getOrderType()))
           .operationType(OperationType.BUY)
           .build();
     }

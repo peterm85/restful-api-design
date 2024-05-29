@@ -297,6 +297,74 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/invest/v1/investors/{investorId}/purchase:
+    post:
+      tags:
+        - Trading
+      summary: Purchase shares by an investor
+      description: | 
+        This endpoint permits purchase shares
+        
+        ```Roles: USER```
+      operationId: purchase
+      parameters:
+        - $ref: '#/components/parameters/InvestorIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseRequest'
+      responses:
+        201:
+          description: Operation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/invest/v1/investors/purchase:
+    patch:
+      tags:
+        - Trading
+      summary: Purchase shares in batches
+      description: | 
+        This endpoint permits purchase shares asynchronously
+        
+        ```Roles: ADMIN```
+      operationId: batchPurchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PurchaseBatchRequest'
+      responses:
+        202:
+          $ref: '#/components/responses/Accepted'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
 components:
   schemas:
     InvestorRequest:
@@ -336,7 +404,8 @@ components:
       properties:
         id:
           description: Investor identifier
-          type: number
+          type: integer
+          format: int64
           example: '123456'
         idNumber:
           description: Investor identification number 
@@ -460,6 +529,106 @@ components:
           type: string
           example: 'USD'
     
+    PurchaseRequest:
+      description: Purchase request
+      type: object
+      additionalProperties: false
+      required:
+        - isin
+        - amount
+        - limitedPrize
+        - orderType
+      properties:
+        isin:
+          description: International Securities Identification Number
+          type: string
+          maxLength: 12
+          example: 'ES0105611000'
+        amount:
+          description: Amount of shares to purchase
+          type: integer
+          example: 200
+        limitedPrize:
+          description: Limited share prize to purchase 
+          type: number
+          format: double
+          example: 2.6
+        orderType:
+          description: DAILY or PERMANENT
+          type: string
+          maxLength: 9
+          example: 'PERMANENT'
+    
+    PurchaseResponse:
+      type: object
+      properties:
+        operationId:
+          description: Operation identifier
+          type: integer
+          format: int64
+          example: '123456'
+        idNumber:
+          description: Investor identification number 
+          type: string
+          maxLength: 20
+          example: '76245691H'
+        isin:
+          description: International Securities Identification Number
+          type: string
+          maxLength: 12
+          example: 'ES0105611000'
+        amount:
+          description: Amount of shares to purchase
+          type: integer
+          example: 200
+        limitedPrize:
+          description: Limited share prize to purchase 
+          type: number
+          format: double
+          example: 2.6
+        orderType:
+          description: DAILY or PERMANENT
+          type: string
+          maxLength: 9
+          example: 'PERMANENT'
+    
+    PurchaseBatchRequest:
+      description: Purchase request for batch operations
+      type: object
+      additionalProperties: false
+      required:
+        - investorId
+        - isin
+        - amount
+        - limitedPrize
+        - orderType
+      properties:
+        investorId:
+          description: Investor identifier
+          type: integer
+          format: int64
+          example: '123456'
+        isin:
+          description: International Securities Identification Number
+          type: string
+          maxLength: 12
+          example: 'ES0105611000'
+        amount:
+          description: Amount of shares to purchase
+          type: integer
+          example: 200
+        limitedPrize:
+          description: Limited share prize to purchase 
+          type: number
+          format: double
+          example: 2.6
+        orderType:
+          description: DAILY or PERMANENT
+          type: string
+          maxLength: 9
+          example: 'PERMANENT'
+    
+    
     PaginationLinks:
       type: object
       properties:
@@ -546,6 +715,8 @@ components:
       example: '50'
 
   responses:
+    Accepted:
+      description: Accepted
     NoContent:
       description: No content
     BadRequest:
